@@ -8,7 +8,7 @@ namespace SharpSoundDevice
 	public struct Event
 	{
 		public EventType Type { get; set; }
-		public uint EventIndex { get; set; }
+		public int EventIndex { get; set; }
 		public object Data { get; set; }
 	}
 }

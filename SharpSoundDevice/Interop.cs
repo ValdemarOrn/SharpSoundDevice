@@ -14,12 +14,16 @@ namespace SharpSoundDevice
 		static int CurrentID = 1000;
 
 		public static Dictionary<int, IAudioDevice> Devices = new Dictionary<int, IAudioDevice>();
+		public static Dictionary<int, string> LogFiles = new Dictionary<int, string>();
 
-		private static string LogFilename;
+		private static string LogFile;
 
-		private static void Log(string message)
+		private static void Log(string message, string filename = null)
 		{
 #if LOG
+			if (filename == null)
+				filename = LogFile;
+
 			var ts = "<" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff ") + "> ";
 			try
 			{
@@ -27,7 +31,7 @@ namespace SharpSoundDevice
 				{
 					try
 					{
-						System.IO.File.AppendAllText(LogFilename, ts + message + "\n");
+						System.IO.File.AppendAllText(filename, ts + message + "\n");
 						break;
 					}
 					catch (Exception) { }
@@ -44,7 +48,7 @@ namespace SharpSoundDevice
 		public static int CreateDevice(string dllFilename)
 		{
 			int id = CurrentID;
-			LogFilename = dllFilename + ".log";
+			LogFile = dllFilename + ".log";
 			Log("");
 			Log("");
 			Log("Starting new plugin instance, ID: " + id);
@@ -104,10 +108,20 @@ namespace SharpSoundDevice
 				}
 
 				Devices[id] = instance;
+				LogFiles[id] = LogFile;
+
 				Log("Object successfully loaded");
 				return id;
 			}
 			
+		}
+
+		public static int GetID(IAudioDevice device)
+		{
+			if (Devices.ContainsValue(device))
+				return Devices.First(x => x.Value == device).Key;
+			else
+				return -1;
 		}
 
 		public static IAudioDevice GetDevice(int id)
@@ -126,6 +140,34 @@ namespace SharpSoundDevice
 
 			Devices.Remove(id);
 			return true;
+		}
+
+		public static void LogDeviceMessage(IAudioDevice device, string message)
+		{
+			LogDeviceMessage(GetID(device), message);
+		}
+
+		public static void LogDeviceException(IAudioDevice device, Exception e)
+		{
+			LogDeviceException(GetID(device), e);
+		}
+
+		public static void LogDeviceMessage(int id, string message)
+		{
+			string filename = LogFiles.ContainsKey(id) ? LogFiles[id] : LogFile;
+			Log(message, filename);
+		}
+
+		public static void LogDeviceException(int id, Exception e)
+		{
+			string filename = LogFiles.ContainsKey(id) ? LogFiles[id] : LogFile;
+			var msg = e.Message + "\n\n" + e.StackTrace;
+			if(e.InnerException != null)
+			{
+				msg += "\n\n" + e.InnerException.Message + "\n\n" + e.InnerException.StackTrace;
+			}
+
+			Log(msg, filename);
 		}
 
 		// --------------------------------------------------------------------
@@ -245,8 +287,7 @@ namespace SharpSoundDevice
 					double[] ch = new double[bufferSize];
 					output[i] = ch;
 
-					void* channel = input[i];
-					Marshal.Copy((IntPtr)channel, ch, 0, (int)bufferSize);
+					Marshal.Copy((IntPtr)input[i], ch, 0, (int)bufferSize);
 				}
 
 				return output;
@@ -329,7 +370,7 @@ namespace SharpSoundDevice
 			Interop.SetParent(hWnd, vstWindow);
 		}
 
-		public static void DockWinFormsWindow(System.Windows.Forms.Panel panel, IntPtr vstWindow)
+		public static void DockWinFormsPanel(System.Windows.Forms.Panel panel, IntPtr vstWindow)
 		{
 			System.Windows.Forms.Application.EnableVisualStyles();
 

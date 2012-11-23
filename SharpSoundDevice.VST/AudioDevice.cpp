@@ -35,67 +35,74 @@ public:
 
 	virtual void SendEvent(SharpSoundDevice::IAudioDevice^ sender, SharpSoundDevice::Event ev)
 	{
-		if(ev.Type == SharpSoundDevice::EventType::Parameter)
+		try
 		{
-			double val = ((System::Double)ev.Data);
-			int index = ev.EventIndex;
-			vstHost->setParameterAutomated(index, (float)val);
-			vstHost->updateDisplay();
-		}
-		else if(ev.Type == SharpSoundDevice::EventType::Midi)
-		{
-			array<byte>^ evData = (array<byte>^)ev.Data;
-			VstEvents events;
-			events.numEvents = 1;
-
-			//sysex
-			if(evData[0] == 0xF0)
+			if(ev.Type == SharpSoundDevice::EventType::Parameter)
 			{
-				unsigned char* data = new unsigned char[evData->Length];
-				Marshal::Copy(evData, 0, (IntPtr)data, evData->Length);
-
-				VstMidiSysexEvent sysexEv;
-				sysexEv.byteSize = sizeof(VstMidiSysexEvent);
-				sysexEv.deltaFrames = ev.EventIndex;
-				sysexEv.dumpBytes = evData->Length;
-				sysexEv.flags = 0;
-				sysexEv.sysexDump = (char*)data;
-				sysexEv.type = kVstSysExType;
-
-				events.events[0] = (VstEvent*)&sysexEv;
-				vstHost->sendVstEventsToHost(&events);
-				delete data;
+				double val = ((System::Double)ev.Data);
+				int index = ev.EventIndex;
+				vstHost->setParameterAutomated(index, (float)val);
+				vstHost->updateDisplay();
 			}
-			else
+			else if(ev.Type == SharpSoundDevice::EventType::Midi)
 			{
-				if(evData->Length != 3)
-					return;
+				array<byte>^ evData = (array<byte>^)ev.Data;
+				VstEvents events;
+				events.numEvents = 1;
 
-				VstMidiEvent  midiEv;
-				midiEv.byteSize = sizeof(VstMidiEvent);
-				midiEv.deltaFrames = ev.EventIndex;
-				midiEv.detune = 0;
-				midiEv.flags = kVstMidiEventIsRealtime;
-				midiEv.midiData[0] = evData[0];
-				midiEv.midiData[1] = evData[1];
-				midiEv.midiData[2] = evData[2];
-				midiEv.midiData[3] = 0;
-				midiEv.noteLength = 0;
-				midiEv.noteOffset = 0;
-				midiEv.noteOffVelocity = 0;
-				midiEv.type = kVstMidiType;
+				//sysex
+				if(evData[0] == 0xF0)
+				{
+					unsigned char* data = new unsigned char[evData->Length];
+					Marshal::Copy(evData, 0, (IntPtr)data, evData->Length);
 
-				events.events[0] = (VstEvent*)&midiEv;
-				vstHost->sendVstEventsToHost(&events);
+					VstMidiSysexEvent sysexEv;
+					sysexEv.byteSize = sizeof(VstMidiSysexEvent);
+					sysexEv.deltaFrames = ev.EventIndex;
+					sysexEv.dumpBytes = evData->Length;
+					sysexEv.flags = 0;
+					sysexEv.sysexDump = (char*)data;
+					sysexEv.type = kVstSysExType;
+
+					events.events[0] = (VstEvent*)&sysexEv;
+					vstHost->sendVstEventsToHost(&events);
+					delete data;
+				}
+				else
+				{
+					if(evData->Length != 3)
+						return;
+
+					VstMidiEvent  midiEv;
+					midiEv.byteSize = sizeof(VstMidiEvent);
+					midiEv.deltaFrames = ev.EventIndex;
+					midiEv.detune = 0;
+					midiEv.flags = kVstMidiEventIsRealtime;
+					midiEv.midiData[0] = evData[0];
+					midiEv.midiData[1] = evData[1];
+					midiEv.midiData[2] = evData[2];
+					midiEv.midiData[3] = 0;
+					midiEv.noteLength = 0;
+					midiEv.noteOffset = 0;
+					midiEv.noteOffVelocity = 0;
+					midiEv.type = kVstMidiType;
+
+					events.events[0] = (VstEvent*)&midiEv;
+					vstHost->sendVstEventsToHost(&events);
+				}
+			}
+			else if(ev.Type == SharpSoundDevice::EventType::ProgramChange)
+			{
+				vstHost->updateDisplay();
+			}
+			else if(ev.Type == SharpSoundDevice::EventType::WindowSize)
+			{
+				vstHost->sizeWindow(sender->DeviceInfo.EditorWidth, sender->DeviceInfo.EditorHeight);
 			}
 		}
-		else if(ev.Type == SharpSoundDevice::EventType::ProgramChange)
+		catch(Exception^ e)
 		{
-			vstHost->updateDisplay();
-		}
-		else if(ev.Type == SharpSoundDevice::EventType::WindowSize)
-		{
-			vstHost->sizeWindow(sender->DeviceInfo.EditorWidth, sender->DeviceInfo.EditorHeight);
+			SharpSoundDevice::Interop::LogDeviceException(sender, e);
 		}
 	}
 
@@ -251,226 +258,338 @@ AudioDevice::~AudioDevice()
 
 void AudioDevice::InitializeDevice()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	dev->InitializeDevice();
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		dev->InitializeDevice();
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 void AudioDevice::DisposeDevice()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	dev->DisposeDevice();
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		dev->DisposeDevice();
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 void AudioDevice::Start()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	dev->Start();
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		dev->Start();
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 void AudioDevice::Stop()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	dev->Stop();
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		dev->Stop();
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 DeviceInfo* AudioDevice::GetDeviceInfo()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	SharpSoundDevice::DeviceInfo^ info = dev->DeviceInfo;
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		SharpSoundDevice::DeviceInfo^ info = dev->DeviceInfo;
 
-	DeviceInfo* devInfo = new DeviceInfo();
+		DeviceInfo* devInfo = new DeviceInfo();
 
-	SharpSoundDevice::Interop::CopyStringToBuffer(info->Developer, (IntPtr)devInfo->Developer, 256);
-	SharpSoundDevice::Interop::CopyStringToBuffer(info->DeviceID, (IntPtr)devInfo->DeviceID, 256);
-	SharpSoundDevice::Interop::CopyStringToBuffer(info->Name, (IntPtr)devInfo->Name, 256);
+		SharpSoundDevice::Interop::CopyStringToBuffer(info->Developer, (IntPtr)devInfo->Developer, 256);
+		SharpSoundDevice::Interop::CopyStringToBuffer(info->DeviceID, (IntPtr)devInfo->DeviceID, 256);
+		SharpSoundDevice::Interop::CopyStringToBuffer(info->Name, (IntPtr)devInfo->Name, 256);
 
-	devInfo->HasEditor = info->HasEditor;
-	devInfo->ProgramCount = info->ProgramCount;
-	devInfo->Type = (DeviceType)(int)info->Type;
-	devInfo->Version = info->Version;
-	devInfo->VstId = info->VstId;
-	devInfo->EditorWidth = info->EditorWidth;
-	devInfo->EditorHeight = info->EditorHeight;
+		devInfo->HasEditor = info->HasEditor;
+		devInfo->ProgramCount = info->ProgramCount;
+		devInfo->Type = (DeviceType)(int)info->Type;
+		devInfo->Version = info->Version;
+		devInfo->VstId = info->VstId;
+		devInfo->EditorWidth = info->EditorWidth;
+		devInfo->EditorHeight = info->EditorHeight;
 
-	return devInfo;
+		return devInfo;
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 //Todo: Make sure the parameter array is deleted properly at runtime
 ParameterInfo* AudioDevice::GetParameterInfo()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	array<SharpSoundDevice::Parameter>^ params = dev->ParameterInfo;
-
-	ParameterInfo* paramInfo = new ParameterInfo();
-	paramInfo->ParameterCount = params->Length;
-	paramInfo->Parameters = new Parameter[params->Length];
-
-	for(int i = 0; i < paramInfo->ParameterCount; i++)
+	try
 	{
-		SharpSoundDevice::Interop::CopyStringToBuffer(params[i].Display, (IntPtr)paramInfo->Parameters[i].Display, 256);
-		SharpSoundDevice::Interop::CopyStringToBuffer(params[i].Name, (IntPtr)paramInfo->Parameters[i].Name, 256);
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		array<SharpSoundDevice::Parameter>^ params = dev->ParameterInfo;
 
-		paramInfo->Parameters[i].Index = params[i].Index;
-		//paramInfo->Parameters[i].Max = params[i].Max;
-		//paramInfo->Parameters[i].Min = params[i].Min;
-		paramInfo->Parameters[i].Steps = params[i].Steps;
-		paramInfo->Parameters[i].Value = params[i].Value;
+		ParameterInfo* paramInfo = new ParameterInfo();
+		paramInfo->ParameterCount = params->Length;
+		paramInfo->Parameters = new Parameter[params->Length];
+
+		for(int i = 0; i < paramInfo->ParameterCount; i++)
+		{
+			SharpSoundDevice::Interop::CopyStringToBuffer(params[i].Display, (IntPtr)paramInfo->Parameters[i].Display, 256);
+			SharpSoundDevice::Interop::CopyStringToBuffer(params[i].Name, (IntPtr)paramInfo->Parameters[i].Name, 256);
+
+			paramInfo->Parameters[i].Index = params[i].Index;
+			//paramInfo->Parameters[i].Max = params[i].Max;
+			//paramInfo->Parameters[i].Min = params[i].Min;
+			paramInfo->Parameters[i].Steps = params[i].Steps;
+			paramInfo->Parameters[i].Value = params[i].Value;
+		}
+
+		return paramInfo;
 	}
-
-	return paramInfo;
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 PortInfo* AudioDevice::GetPortInfo()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	array<SharpSoundDevice::Port>^ ports = dev->PortInfo;
-
-	PortInfo* portInfo = new PortInfo;
-	portInfo->PortCount = ports->Length;
-
-	this->InputChannelCount = 0;
-	this->OutputChannelCount = 0;
-
-	for(int i = 0; i < ports->Length; i++)
+	try
 	{
-		SharpSoundDevice::Interop::CopyStringToBuffer(ports[i].Name, (IntPtr)portInfo->Ports[i].Name, 256);
-		portInfo->Ports[i].Direction = (PortDirection)(int)ports[i].Direction;
-		portInfo->Ports[i].NumberOfChannels = ports[i].NumberOfChannels;
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		array<SharpSoundDevice::Port>^ ports = dev->PortInfo;
 
-		if(portInfo->Ports[i].Direction == _OUTPUT)
-			OutputChannelCount += portInfo->Ports[i].NumberOfChannels;
-		else if(portInfo->Ports[i].Direction == _INPUT)
-			InputChannelCount += portInfo->Ports[i].NumberOfChannels;
+		PortInfo* portInfo = new PortInfo;
+		portInfo->PortCount = ports->Length;
+
+		this->InputChannelCount = 0;
+		this->OutputChannelCount = 0;
+
+		for(int i = 0; i < ports->Length; i++)
+		{
+			SharpSoundDevice::Interop::CopyStringToBuffer(ports[i].Name, (IntPtr)portInfo->Ports[i].Name, 256);
+			portInfo->Ports[i].Direction = (PortDirection)(int)ports[i].Direction;
+			portInfo->Ports[i].NumberOfChannels = ports[i].NumberOfChannels;
+
+			if(portInfo->Ports[i].Direction == _OUTPUT)
+				OutputChannelCount += portInfo->Ports[i].NumberOfChannels;
+			else if(portInfo->Ports[i].Direction == _INPUT)
+				InputChannelCount += portInfo->Ports[i].NumberOfChannels;
+		}
+
+		return portInfo;
 	}
-
-	return portInfo;
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 int AudioDevice::GetCurrentProgram()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	return dev->CurrentProgram;
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		return dev->CurrentProgram;
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 
 void AudioDevice::SendEvent(Event* event)
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	SharpSoundDevice::Event^ ev = gcnew SharpSoundDevice::Event();
-
-	ev->Type = (SharpSoundDevice::EventType)(int)event->Type;
-	ev->EventIndex = event->EventIndex;
-
-	if(event->Type == _PARAMETER)
+	try
 	{
-		ev->Data = (System::Double)*((double*)event->Data);
-	}
-	else if(event->Type == _MIDI)
-	{
-		array<Byte>^ val = gcnew array<Byte>(event->DataLength);
-		for(int i=0; i<val->Length; i++)
-			val[i] = (Byte)((unsigned char*)event->Data)[i];
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		SharpSoundDevice::Event^ ev = gcnew SharpSoundDevice::Event();
 
-		ev->Data = val;
-	}
-	else if(event->Type == _PROGRAM)
-	{
-		ev->Data = nullptr;
-	}
+		ev->Type = (SharpSoundDevice::EventType)(int)event->Type;
+		ev->EventIndex = event->EventIndex;
 
-	dev->SendEvent(*ev);
+		if(event->Type == _PARAMETER)
+		{
+			ev->Data = (System::Double)*((double*)event->Data);
+		}
+		else if(event->Type == _MIDI)
+		{
+			array<Byte>^ val = gcnew array<Byte>(event->DataLength);
+			for(int i=0; i<val->Length; i++)
+				val[i] = (Byte)((unsigned char*)event->Data)[i];
+
+			ev->Data = val;
+		}
+		else if(event->Type == _PROGRAM)
+		{
+			ev->Data = nullptr;
+		}
+
+		dev->SendEvent(*ev);
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 void AudioDevice::ProcessSample(double** input, double** output, unsigned int bufferSize)
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	array<array<double>^>^ inp = SharpSoundDevice::Interop::GetManagedSamples((IntPtr)input, InputChannelCount, bufferSize);
-	array<array<double>^>^ outp = SharpSoundDevice::Interop::GetEmptyArrays(OutputChannelCount, bufferSize);
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		array<array<double>^>^ inp = SharpSoundDevice::Interop::GetManagedSamples((IntPtr)input, InputChannelCount, bufferSize);
+		array<array<double>^>^ outp = SharpSoundDevice::Interop::GetEmptyArrays(OutputChannelCount, bufferSize);
 
-	dev->ProcessSample(inp, outp, bufferSize);
+		dev->ProcessSample(inp, outp, bufferSize);
 
-	SharpSoundDevice::Interop::CopyToUnmanaged(outp, (IntPtr)output, OutputChannelCount, bufferSize);
+		SharpSoundDevice::Interop::CopyToUnmanaged(outp, (IntPtr)output, OutputChannelCount, bufferSize);
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 void AudioDevice::OpenEditor(void* parentWindow)
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	dev->OpenEditor((IntPtr)parentWindow);
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		dev->OpenEditor((IntPtr)parentWindow);
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 void AudioDevice::CloseEditor()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	dev->CloseEditor();
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		dev->CloseEditor();
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 void AudioDevice::SetProgramData(Program* program, int index)
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	SharpSoundDevice::Program newprog = *(gcnew SharpSoundDevice::Program());
-
-	// only load data if not null
-	if(program->Data != 0 && program->DataSize > 0)
+	try
 	{
-		// allocate byte array for data
-		array<Byte>^ val = gcnew array<Byte>(program->DataSize);
-		Marshal::Copy((IntPtr)program->Data, val, 0, program->DataSize);
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		SharpSoundDevice::Program newprog = *(gcnew SharpSoundDevice::Program());
+
+		// only load data if not null
+		if(program->Data != 0 && program->DataSize > 0)
+		{
+			// allocate byte array for data
+			array<Byte>^ val = gcnew array<Byte>(program->DataSize);
+			Marshal::Copy((IntPtr)program->Data, val, 0, program->DataSize);
 		
-		newprog.Data = val;
+			newprog.Data = val;
+		}
+
+		if(program->Name != 0)
+			newprog.Name = gcnew String(program->Name);
+		else
+			newprog.Name = gcnew String("");
+
+		dev->SetProgramData(newprog, index);
 	}
-
-	if(program->Name != 0)
-		newprog.Name = gcnew String(program->Name);
-	else
-		newprog.Name = gcnew String("");
-
-	dev->SetProgramData(newprog, index);
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 Program* AudioDevice::GetProgramData(int index)
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	SharpSoundDevice::Program^ progManaged = dev->GetProgramData(index);
-
-	Program* program = new Program();
-
-	if(progManaged->Data == nullptr)
+	try
 	{
-		program->DataSize = 0;
-		program->Data = 0;
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		SharpSoundDevice::Program^ progManaged = dev->GetProgramData(index);
+
+		Program* program = new Program();
+
+		if(progManaged->Data == nullptr)
+		{
+			program->DataSize = 0;
+			program->Data = 0;
+		}
+		else
+		{
+			// set data size
+			program->DataSize = progManaged->Data->Length;
+
+			// set data
+			program->Data = new unsigned char[progManaged->Data->Length];
+			Marshal::Copy(progManaged->Data, 0, (IntPtr)program->Data, progManaged->Data->Length);
+		}
+
+		if(progManaged->Name == nullptr)
+			strncpy(program->Name, "", 256);
+		else
+			SharpSoundDevice::Interop::CopyStringToBuffer(progManaged->Name, (IntPtr)program->Name, 256);
+
+		return program;
 	}
-	else
+	catch(Exception^ e)
 	{
-		// set data size
-		program->DataSize = progManaged->Data->Length;
-
-		// set data
-		program->Data = new unsigned char[progManaged->Data->Length];
-		Marshal::Copy(progManaged->Data, 0, (IntPtr)program->Data, progManaged->Data->Length);
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
 	}
-
-	if(progManaged->Name == nullptr)
-		strncpy(program->Name, "", 256);
-	else
-		SharpSoundDevice::Interop::CopyStringToBuffer(progManaged->Name, (IntPtr)program->Name, 256);
-
-	return program;
 }
 
 void AudioDevice::HostChanged()
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	dev->HostChanged();
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		dev->HostChanged();
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 void AudioDevice::SetVstHost(VstPluginBridge* host)
 {
-	HostInfoClass^ hostinfo = gcnew HostInfoClass();
-	hostinfo->vstHost = host;
-	hostinfo->Device = this;
+	try
+	{
+		HostInfoClass^ hostinfo = gcnew HostInfoClass();
+		hostinfo->vstHost = host;
+		hostinfo->Device = this;
 
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-	dev->HostInfo = hostinfo;
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
+		dev->HostInfo = hostinfo;
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 // -------------------- Serialize Helpers --------------------
@@ -479,47 +598,75 @@ unsigned char* SerializedData = 0;
 
 int SerializeProgram(AudioDevice* device, int programIndex, unsigned char** dataPointer)
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(device->AudioDeviceID);
-	array<byte>^ data = SharpSoundDevice::ProgramData::SerializeSingleProgram(dev->GetProgramData(programIndex));
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(device->AudioDeviceID);
+		array<byte>^ data = SharpSoundDevice::ProgramData::SerializeSingleProgram(dev->GetProgramData(programIndex));
 
-	delete SerializedData;
-	SerializedData = new unsigned char[data->Length];
-	Marshal::Copy(data, 0, (IntPtr)SerializedData, data->Length);
+		delete SerializedData;
+		SerializedData = new unsigned char[data->Length];
+		Marshal::Copy(data, 0, (IntPtr)SerializedData, data->Length);
 
-	*dataPointer = SerializedData;
-	return data->Length;
+		*dataPointer = SerializedData;
+		return data->Length;
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(device->AudioDeviceID, e);
+	}
 }
 
 int SerializeBank(AudioDevice* device, unsigned char** dataPointer)
 {
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(device->AudioDeviceID);
-	array<byte>^ data = SharpSoundDevice::ProgramData::SerializeBank(dev);
+	try
+	{
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(device->AudioDeviceID);
+		array<byte>^ data = SharpSoundDevice::ProgramData::SerializeBank(dev);
 
-	delete SerializedData;
-	SerializedData = new unsigned char[data->Length];
-	Marshal::Copy(data, 0, (IntPtr)SerializedData, data->Length);
+		delete SerializedData;
+		SerializedData = new unsigned char[data->Length];
+		Marshal::Copy(data, 0, (IntPtr)SerializedData, data->Length);
 
-	*dataPointer = SerializedData;
-	return data->Length;
+		*dataPointer = SerializedData;
+		return data->Length;
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(device->AudioDeviceID, e);
+	}
 }
 
 void DeserializeProgram(AudioDevice* device, unsigned char* data, int dataLength, int programIndex)
 {
-	array<byte>^ d = gcnew array<byte>(dataLength);
-	Marshal::Copy((IntPtr)data, d, 0, dataLength);
+	try
+	{
+		array<byte>^ d = gcnew array<byte>(dataLength);
+		Marshal::Copy((IntPtr)data, d, 0, dataLength);
 
-	SharpSoundDevice::Program prog = SharpSoundDevice::ProgramData::DeserializeSingleProgram(d);
+		SharpSoundDevice::Program prog = SharpSoundDevice::ProgramData::DeserializeSingleProgram(d);
 
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(device->AudioDeviceID);
-	dev->SetProgramData(prog, programIndex);
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(device->AudioDeviceID);
+		dev->SetProgramData(prog, programIndex);
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(device->AudioDeviceID, e);
+	}
 }
 
 void DeserializeBank(AudioDevice* device, unsigned char* data, int dataLength)
 {
-	array<byte>^ d = gcnew array<byte>(dataLength);
-	Marshal::Copy((IntPtr)data, d, 0, dataLength);
+	try
+	{
+		array<byte>^ d = gcnew array<byte>(dataLength);
+		Marshal::Copy((IntPtr)data, d, 0, dataLength);
 
-	SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(device->AudioDeviceID);
-	SharpSoundDevice::ProgramData::DeserializeBank(d, dev);
+		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(device->AudioDeviceID);
+		SharpSoundDevice::ProgramData::DeserializeBank(d, dev);
+	}
+	catch(Exception^ e)
+	{
+		SharpSoundDevice::Interop::LogDeviceException(device->AudioDeviceID, e);
+	}
 }
 

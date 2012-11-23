@@ -22,7 +22,7 @@ namespace SharpSoundDevice.Devices
 				if (_currentProgram != value)
 				{
 					_currentProgram = value;
-					HostInfo.SendEvent(this, new Event() { Data = null, EventIndex = (uint)CurrentProgram, Type = EventType.ProgramChange });
+					HostInfo.SendEvent(this, new Event() { Data = null, EventIndex = CurrentProgram, Type = EventType.ProgramChange });
 				}
 			}
 		}
@@ -151,7 +151,7 @@ namespace SharpSoundDevice.Devices
 		public void OpenEditor(IntPtr parentWindow)
 		{
 			Editor = new GainEditor(this);
-			Interop.DockWinFormsWindow(Editor, parentWindow);
+			Interop.DockWinFormsPanel(Editor, parentWindow);
 
 			/*
 			w = new WpfUI.MainWindow();

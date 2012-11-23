@@ -108,7 +108,7 @@ typedef struct
 typedef struct
 {
 	EventType Type;
-	unsigned int EventIndex;
+	int EventIndex;
 	void* Data;
 	unsigned int DataLength;
 
