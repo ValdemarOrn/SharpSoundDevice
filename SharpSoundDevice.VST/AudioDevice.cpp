@@ -231,6 +231,14 @@ int CreateDevice()
 	GetModuleFileName(thismodule,dllName,256);
 
 	int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName));
+
+	SharpSoundDevice::Interop::LogDeviceMessage(deviceID, "SharpSoundDevice.VST Version: " + System::Reflection::Assembly::GetExecutingAssembly()->ImageRuntimeVersion);
+#ifdef _DEBUG
+	SharpSoundDevice::Interop::LogDeviceMessage(deviceID, "SharpSoundDevice.VST Configuration: Debug");
+#else
+	SharpSoundDevice::Interop::LogDeviceMessage(deviceID, "SharpSoundDevice.VST Configuration: Release");
+#endif
+
 	return deviceID;
 }
 
@@ -334,6 +342,7 @@ DeviceInfo* AudioDevice::GetDeviceInfo()
 	catch(Exception^ e)
 	{
 		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+		return 0;
 	}
 }
 
@@ -349,7 +358,9 @@ ParameterInfo* AudioDevice::GetParameterInfo()
 		paramInfo->ParameterCount = params->Length;
 		paramInfo->Parameters = new Parameter[params->Length];
 
-		for(int i = 0; i < paramInfo->ParameterCount; i++)
+		int count = (int)paramInfo->ParameterCount;
+
+		for(int i = 0; i < count; i++)
 		{
 			SharpSoundDevice::Interop::CopyStringToBuffer(params[i].Display, (IntPtr)paramInfo->Parameters[i].Display, 256);
 			SharpSoundDevice::Interop::CopyStringToBuffer(params[i].Name, (IntPtr)paramInfo->Parameters[i].Name, 256);
@@ -366,6 +377,7 @@ ParameterInfo* AudioDevice::GetParameterInfo()
 	catch(Exception^ e)
 	{
 		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+		return 0;
 	}
 }
 
@@ -399,6 +411,7 @@ PortInfo* AudioDevice::GetPortInfo()
 	catch(Exception^ e)
 	{
 		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+		return 0;
 	}
 }
 
@@ -412,6 +425,7 @@ int AudioDevice::GetCurrentProgram()
 	catch(Exception^ e)
 	{
 		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+		return 0;
 	}
 }
 
@@ -559,6 +573,7 @@ Program* AudioDevice::GetProgramData(int index)
 	catch(Exception^ e)
 	{
 		SharpSoundDevice::Interop::LogDeviceException(AudioDeviceID, e);
+		return 0;
 	}
 }
 
@@ -613,6 +628,7 @@ int SerializeProgram(AudioDevice* device, int programIndex, unsigned char** data
 	catch(Exception^ e)
 	{
 		SharpSoundDevice::Interop::LogDeviceException(device->AudioDeviceID, e);
+		return 0;
 	}
 }
 
@@ -633,6 +649,7 @@ int SerializeBank(AudioDevice* device, unsigned char** dataPointer)
 	catch(Exception^ e)
 	{
 		SharpSoundDevice::Interop::LogDeviceException(device->AudioDeviceID, e);
+		return 0;
 	}
 }
 

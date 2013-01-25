@@ -12,7 +12,7 @@ class VstPluginBridge;
 class VstPluginBridge : public AudioEffectX
 {
 private:
-	// 24 channels of 32 sample buffers
+	// 24 channels of 32768 sample buffers
 	double* inputBuffers[24];
 	double* outputBuffers[24];
 

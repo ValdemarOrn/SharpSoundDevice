@@ -50,7 +50,12 @@ namespace SharpSoundDevice
 			int id = CurrentID;
 			LogFile = dllFilename + ".log";
 			Log("");
-			Log("");
+			Log("SharpSoundDevice Version: " + Assembly.GetExecutingAssembly().ImageRuntimeVersion);
+#if DEBUG
+			Log("SharpSoundDevice Configuration: Debug");
+#else
+			Log("SharpSoundDevice Configuration: Release");
+#endif
 			Log("Starting new plugin instance, ID: " + id);
 
 			lock (LockObject)

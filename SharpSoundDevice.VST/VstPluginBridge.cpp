@@ -95,7 +95,9 @@ void VstPluginBridge::calculatePortCount()
 	this->InputChannelCount = 0;
 	this->OutputChannelCount = 0;
 
-	for(int i = 0; i < portInfo->PortCount; i++)
+	int count = ((int)portInfo->PortCount);
+
+	for(int i = 0; i < count; i++)
 	{
 		if(portInfo->Ports[i].Direction == _OUTPUT)
 			OutputChannelCount += portInfo->Ports[i].NumberOfChannels;
@@ -190,7 +192,7 @@ float VstPluginBridge::getParameter (VstInt32 index)
 	ParameterInfo* paramInfo = Device->GetParameterInfo();
 	float val = 0.0f;
 
-	if(index >= 0 && index < paramInfo->ParameterCount)
+	if(index >= 0 && index < ((int)paramInfo->ParameterCount))
 		val = (float)paramInfo->Parameters[index].Value;
 
 	delete paramInfo->Parameters;
@@ -206,7 +208,7 @@ bool VstPluginBridge::getParameterProperties(VstInt32 index, VstParameterPropert
 
 	ParameterInfo* paramInfo = Device->GetParameterInfo();
 
-	if(index >= 0 && index < paramInfo->ParameterCount)
+	if(index >= 0 && index < ((int)paramInfo->ParameterCount))
 	{
 		int steps = paramInfo->Parameters[index].Steps;
 		if(steps > 0)
@@ -237,7 +239,7 @@ void VstPluginBridge::getParameterDisplay (VstInt32 index, char* text)
 {
 	ParameterInfo* paramInfo = Device->GetParameterInfo();
 	
-	if(index >= 0  && index < paramInfo->ParameterCount)
+	if(index >= 0  && index < ((int)paramInfo->ParameterCount))
 	{
 		char* disp = paramInfo->Parameters[index].Display;
 		strncpySafe(text, disp, kVstMaxParamStrLen + 1);
@@ -252,7 +254,7 @@ void VstPluginBridge::getParameterName (VstInt32 index, char* label)
 {
 	ParameterInfo* paramInfo = Device->GetParameterInfo();
 		
-	if(index < 0 ||index >= paramInfo->ParameterCount)
+	if(index < 0 ||index >= ((int)paramInfo->ParameterCount))
 		return;
 
 	char* name = paramInfo->Parameters[index].Name;
@@ -314,7 +316,9 @@ bool VstPluginBridge::getInputProperties (VstInt32 index, VstPinProperties* prop
 	Port inputPorts[16];
 	int inputPortCount = 0;
 
-	for(int i = 0; i <= portInfo->PortCount; i++)
+	int count = (int)portInfo->PortCount;
+
+	for(int i = 0; i <= count; i++)
 	{
 		if(portInfo->Ports[i].Direction == _INPUT)
 		{
@@ -335,7 +339,7 @@ bool VstPluginBridge::getInputProperties (VstInt32 index, VstPinProperties* prop
 
 		channel++;
 
-		if(channel >= inputPorts[port].NumberOfChannels)
+		if(channel >= ((int)inputPorts[port].NumberOfChannels))
 		{
 			port++;
 			channel = 0;
@@ -380,7 +384,9 @@ bool VstPluginBridge::getOutputProperties (VstInt32 index, VstPinProperties* pro
 	Port outputPorts[16];
 	int outputPortCount = 0;
 
-	for(int i = 0; i <= portInfo->PortCount; i++)
+	int count = (int)portInfo->PortCount;
+
+	for(int i = 0; i <= count; i++)
 	{
 		if(portInfo->Ports[i].Direction == _OUTPUT)
 		{
@@ -401,7 +407,7 @@ bool VstPluginBridge::getOutputProperties (VstInt32 index, VstPinProperties* pro
 
 		channel++;
 
-		if(channel >= outputPorts[port].NumberOfChannels)
+		if(channel >= (int)(outputPorts[port].NumberOfChannels))
 		{
 			port++;
 			channel = 0;

@@ -115,7 +115,6 @@ typedef struct
 } Event;
 
 
-
 class AudioDevice
 {
 protected:
