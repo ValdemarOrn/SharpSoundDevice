@@ -45,44 +45,49 @@ namespace SharpSoundDevice
 #endif
 		}
 
-		public static int CreateDevice(string dllFilename)
+		public static int CreateDevice(string dllFilename, string assemblyFilename)
 		{
-			int id = CurrentID;
-			LogFile = dllFilename + ".log";
-			Log("");
-			Log("SharpSoundDevice Version: " + Assembly.GetExecutingAssembly().ImageRuntimeVersion);
-#if DEBUG
-			Log("SharpSoundDevice Configuration: Debug");
-#else
-			Log("SharpSoundDevice Configuration: Release");
-#endif
-			Log("Starting new plugin instance, ID: " + id);
+			assemblyFilename = assemblyFilename.Trim();
 
-			lock (LockObject)
+			if (assemblyFilename.StartsWith("::PLACEHOLDER"))
 			{
+				Log("VST Bridge dll has not been patched, it only contains placeholder assembly name. You must set the correct assembly name");
+				return -1;
+			}
+
+			
+			lock(LockObject)
+			{
+				int id = 0;
+				id = CurrentID;
 				CurrentID++;
-				
-				Log("Getting config file");
-				var config = GetConfig(dllFilename);
-				Log("Config loaded");
-				if(config == null || config.Count == 0)
-					Log("Config file is empty");
 
-				var assemblyName = config["assemblyname"];
-				var className = config["classname"];
+				LogFile = dllFilename + ".log";
+				Log("");
+				Log("SharpSoundDevice Version: " + Assembly.GetExecutingAssembly().ImageRuntimeVersion);
+#if DEBUG
+				Log("SharpSoundDevice Configuration: Debug");
+#else
+				Log("SharpSoundDevice Configuration: Release");
+#endif
+				Log("Starting new plugin instance, ID: " + id);
 
+				var assemblyName = assemblyFilename;
 				Log("Assembly name: " + assemblyName);
-				Log("Class name: " + className);
-
 				var searchPath = System.IO.Path.GetDirectoryName(dllFilename);
-
 				var asm = LoadAssembly(assemblyName, searchPath);
 
-				Log("Searching for classes in in assembly");
-				var exported = asm.GetExportedTypes();
-				Log("Number of classes: " + exported.Length);
+				Log("Searching for classes in assembly");
+				var exported = asm.GetExportedTypes().Where(x => x.GetInterfaces().Contains(typeof(IAudioDevice))).ToList();
+				Log("Number of classes: " + exported.Count);
 
-				Log("Attempting to find class " + className);
+				if (exported.Count == 0)
+				{
+					Log("No class implementing IAudioDevice was found in the specified assembly");
+					return -1;
+				}
+
+				string className = exported[0].FullName;
 				var type = exported.FirstOrDefault(x => x.FullName == className);
 
 				if(type == null)
@@ -118,7 +123,6 @@ namespace SharpSoundDevice
 				Log("Object successfully loaded");
 				return id;
 			}
-			
 		}
 
 		public static int GetID(IAudioDevice device)
@@ -234,14 +238,11 @@ namespace SharpSoundDevice
 			}
 		}
 
-		public static Dictionary<string, string> GetConfig(string dllname)
+		/*public static Dictionary<string, string> GetConfig(string dllname)
 		{
 			string ConfigFilename = dllname + ".cfg";
-
 			Log("Attempting to load " + ConfigFilename);
-
 			var output = new Dictionary<string, string>();
-
 			if (!System.IO.File.Exists(ConfigFilename))
 			{
 				Log("Config file does not exist");
@@ -251,9 +252,7 @@ namespace SharpSoundDevice
 			try
 			{
 				Log("Reading config");
-
 				var lines = System.IO.File.ReadAllLines(ConfigFilename);
-			
 				foreach (var line in lines)
 				{
 					if (!line.Contains(':'))
@@ -271,7 +270,7 @@ namespace SharpSoundDevice
 			}
 
 			return output;
-		}
+		}*/
 
 		/// <summary>
 		/// Copies data from double** into managed 2d array
@@ -340,7 +339,6 @@ namespace SharpSoundDevice
 		{
 			var bytes = Encoding.UTF8.GetBytes(input + '\0');
 			int count = (maxLen < bytes.Length) ? maxLen : bytes.Length;
-
 			Marshal.Copy(bytes, 0, buffer, count);
 
 			// add null terminator at end of buffer

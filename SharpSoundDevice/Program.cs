@@ -5,12 +5,25 @@ using System.Text;
 
 namespace SharpSoundDevice
 {
+	/// <summary>
+	/// A struct containing program data.
+	/// </summary>
 	public struct Program
 	{
+		/// <summary>
+		/// The name of the program
+		/// </summary>
 		public string Name;
+
+		/// <summary>
+		/// Program data. Format is specified by the device.
+		/// </summary>
 		public byte[] Data;
 	}
 
+	/// <summary>
+	/// A class used to serialize and deserialize programs and banks in a common format.
+	/// </summary>
 	public class ProgramData
 	{
 		static string Header = "VSTAudioDevice Version 1.0";
@@ -19,14 +32,19 @@ namespace SharpSoundDevice
 
 		/*
 		 * Serialized Format:
+		 * (newline character separates each line of data)
 		 * 
 		 * Header
 		 * Type
 		 * Program Name
-		 * Base64 Encoded Data
+		 * Base64 Encoded Pogram 1
+		 * Base64 Encoded Pogram 2
+		 * Base64 Encoded Pogram 3
 		 * ....
 		 * Program Name
-		 * Base64 Encoded Data
+		 * Base64 Encoded Pogram 1
+		 * Base64 Encoded Pogram 2
+		 * Base64 Encoded Pogram 3
 		 * ....
 		 * 
 		*/
@@ -124,19 +142,5 @@ namespace SharpSoundDevice
 				device.SetProgramData(programs[i], i);
 			}
 		}
-
-		/*static byte[] Combine(params byte[][] args)
-		{
-			long index = 0;
-			byte[] output = new byte[args.Sum(x => x.Length)];
-
-			for(int i=0; i<args.Length; i++)
-			{
-				Array.Copy(args[i], 0, output, index, args[i].Length);
-				index += args[i].Length;
-			}
-
-			return output;
-		}*/
 	}
 }

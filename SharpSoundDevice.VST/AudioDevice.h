@@ -27,8 +27,9 @@ enum EventType
 	_WINDOWSIZE
 };
 
+#pragma pack(push, 4)
+
 /* Device Info */
-#pragma pack(4)
 typedef struct
 {
 	char DeviceID[256];
@@ -45,8 +46,6 @@ typedef struct
 } DeviceInfo;
 
 /* Parameter Info */
-
-#pragma pack(4)
 typedef struct 
 {
 	char Name[256];
@@ -61,7 +60,6 @@ typedef struct
 
 } Parameter;
 
-#pragma pack(4)
 typedef struct
 {
 	unsigned int ParameterCount;
@@ -71,8 +69,6 @@ typedef struct
 
 
 /* Port Info */
-
-#pragma pack(4)
 typedef struct 
 {
 	char Name[256];
@@ -81,7 +77,6 @@ typedef struct
 
 } Port;
 
-#pragma pack(4)
 typedef struct 
 {
 	unsigned int PortCount;
@@ -91,8 +86,6 @@ typedef struct
 
 
 /* Program */
-
-#pragma pack(4)
 typedef struct
 {
 	char Name[256];
@@ -103,8 +96,6 @@ typedef struct
 
 
 /* Event */
-
-#pragma pack(4)
 typedef struct
 {
 	EventType Type;
@@ -114,6 +105,7 @@ typedef struct
 
 } Event;
 
+#pragma pack(pop)
 
 class AudioDevice
 {

@@ -229,8 +229,11 @@ int CreateDevice()
 	char dllName[256];
 	HINSTANCE thismodule = GetMyModuleHandle();
 	GetModuleFileName(thismodule,dllName,256);
+	
+	// The patcher is used to replace this value
+	const char* assemblyName = "::PLACEHOLDER::                                                                                                                                                                                                  ";
 
-	int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName));
+	int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
 
 	SharpSoundDevice::Interop::LogDeviceMessage(deviceID, "SharpSoundDevice.VST Version: " + System::Reflection::Assembly::GetExecutingAssembly()->ImageRuntimeVersion);
 #ifdef _DEBUG
@@ -352,7 +355,7 @@ ParameterInfo* AudioDevice::GetParameterInfo()
 	try
 	{
 		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-		array<SharpSoundDevice::Parameter>^ params = dev->ParameterInfo;
+		array<SharpSoundDevice::Parameter^>^ params = dev->ParameterInfo;
 
 		ParameterInfo* paramInfo = new ParameterInfo();
 		paramInfo->ParameterCount = params->Length;
@@ -362,14 +365,14 @@ ParameterInfo* AudioDevice::GetParameterInfo()
 
 		for(int i = 0; i < count; i++)
 		{
-			SharpSoundDevice::Interop::CopyStringToBuffer(params[i].Display, (IntPtr)paramInfo->Parameters[i].Display, 256);
-			SharpSoundDevice::Interop::CopyStringToBuffer(params[i].Name, (IntPtr)paramInfo->Parameters[i].Name, 256);
+			SharpSoundDevice::Interop::CopyStringToBuffer(params[i]->Display, (IntPtr)paramInfo->Parameters[i].Display, 256);
+			SharpSoundDevice::Interop::CopyStringToBuffer(params[i]->Name, (IntPtr)paramInfo->Parameters[i].Name, 256);
 
-			paramInfo->Parameters[i].Index = params[i].Index;
+			paramInfo->Parameters[i].Index = params[i]->Index;
 			//paramInfo->Parameters[i].Max = params[i].Max;
 			//paramInfo->Parameters[i].Min = params[i].Min;
-			paramInfo->Parameters[i].Steps = params[i].Steps;
-			paramInfo->Parameters[i].Value = params[i].Value;
+			paramInfo->Parameters[i].Steps = params[i]->Steps;
+			paramInfo->Parameters[i].Value = params[i]->Value;
 		}
 
 		return paramInfo;

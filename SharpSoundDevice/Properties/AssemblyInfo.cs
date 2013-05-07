@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SharpSoundDevice")]
-[assembly: AssemblyCopyright("Valdemar Erlingsson 2012")]
+[assembly: AssemblyCopyright("Valdemar Erlingsson 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

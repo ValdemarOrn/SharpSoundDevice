@@ -541,7 +541,7 @@ void VstPluginBridge::processReplacing (float** inputs, float** outputs, VstInt3
 
 	for(int i=0; i < OutputChannelCount; i++)
 		for(int j=0; j<sampleFrames; j++)
-			outputs[i][j] = (double)outputBuffers[i][j];
+			outputs[i][j] = (float)outputBuffers[i][j];
 }
 
 //-----------------------------------------------------------------------------------------

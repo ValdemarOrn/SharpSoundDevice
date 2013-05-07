@@ -1,0 +1,6 @@
+Use the Visual Studio Command Prompt to run build.bat.
+It will create a new zip file inside the Builds/ directory containing
+debug and release versions of all files needed to develop a SharpSoundDevice plugin.
+
+To find the Visual Studio Command Prompt, look in the start menu:
+"Developer Command Prompt for VS2012"
