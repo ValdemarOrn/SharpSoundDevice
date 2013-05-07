@@ -86,6 +86,7 @@
     <ClInclude Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.h" />
     <ClInclude Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.h" />
     <ClInclude Include="AudioDevice.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="VstPluginBridge.h" />
     <ClInclude Include="VstPluginBridgeEditor.h" />
   </ItemGroup>
@@ -101,6 +102,9 @@
     <ProjectReference Include="..\SharpSoundDevice\SharpSoundDevice.csproj">
       <Project>{d07e798c-76e3-49fb-b97c-ca4f8dd55624}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SharpSoundDevice.VST.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
