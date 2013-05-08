@@ -11,7 +11,7 @@ using namespace System::Runtime::InteropServices;
 
 // ---------------------- Callback Class for HostInfo ------------------------
 
-public ref class HostInfoClass : SharpSoundDevice::HostInfo
+public ref class HostInfoClass : SharpSoundDevice::IHostInfo
 {
 private:
 	char* HostVendorPtr;
@@ -110,7 +110,8 @@ public:
 	{
 		double get()
 		{
-			return vstHost->getTimeInfo(kVstTempoValid)->tempo;
+			VstTimeInfo* info = vstHost->getTimeInfo(kVstTempoValid);
+			return info->tempo;
 		}
 	}
 
@@ -118,7 +119,8 @@ public:
 	{
 		double get()
 		{
-			return vstHost->getTimeInfo(0)->samplePos;
+			VstTimeInfo* info = vstHost->getTimeInfo(0);
+			return info->samplePos;
 		}
 	}
 
@@ -126,7 +128,16 @@ public:
 	{
 		double get()
 		{
-			return vstHost->getTimeInfo(0)->sampleRate;
+			double fs = vstHost->Samplerate;
+			if(fs > 0)
+			{
+				return fs;
+			}
+			else
+			{
+				VstTimeInfo* info = vstHost->getTimeInfo(0);
+				return info->sampleRate;
+			}
 		}
 	}
 
@@ -134,7 +145,8 @@ public:
 	{
 		int get()
 		{
-			return vstHost->getBlockSize();
+			int blockSize = vstHost->getBlockSize();
+			return blockSize;
 		}
 	}
 
@@ -142,7 +154,8 @@ public:
 	{
 		int get()
 		{
-			return vstHost->getTimeInfo(kVstTempoValid)->timeSigNumerator;
+			VstTimeInfo* info = vstHost->getTimeInfo(kVstTempoValid);
+			return info->timeSigNumerator;
 		}
 	}
 
@@ -150,7 +163,8 @@ public:
 	{
 		int get()
 		{
-			return vstHost->getTimeInfo(kVstTempoValid)->timeSigDenominator;
+			VstTimeInfo* info = vstHost->getTimeInfo(kVstTempoValid);
+			return info->timeSigDenominator;
 		}
 	}
 

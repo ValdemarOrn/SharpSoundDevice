@@ -21,6 +21,8 @@ AudioEffect* createEffectInstance (audioMasterCallback audioMaster)
 //-----------------------------------------------------------------------------------------
 VstPluginBridge::VstPluginBridge (audioMasterCallback audioMaster) : AudioEffectX (audioMaster, 1, 1)
 {
+	this->Samplerate = 0;
+
 	for(int i=0; i<24; i++)
 	{
 		inputBuffers[i] = new double[32768];
@@ -521,6 +523,7 @@ VstInt32 VstPluginBridge::getNumMidiOutputChannels ()
 //-----------------------------------------------------------------------------------------
 void VstPluginBridge::setSampleRate (float sampleRate)
 {
+	this->Samplerate = sampleRate;
 	Device->HostChanged();
 }
 

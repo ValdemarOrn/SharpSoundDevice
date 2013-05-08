@@ -7,13 +7,26 @@ using System.Text;
 
 namespace SharpSoundDevice
 {
+	/// <summary>
+	/// Class containing function used by the VST plugin bridge to create new device
+	/// instances and track running devices.
+	/// 
+	/// Not to be used by plugin devices!
+	/// </summary>
 	public class Interop
 	{
 		static object LockObject = new object();
 
 		static int CurrentID = 1000;
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public static Dictionary<int, IAudioDevice> Devices = new Dictionary<int, IAudioDevice>();
+		
+		/// <summary>
+		/// 
+		/// </summary>
 		public static Dictionary<int, string> LogFiles = new Dictionary<int, string>();
 
 		private static string LogFile;
@@ -45,6 +58,12 @@ namespace SharpSoundDevice
 #endif
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dllFilename"></param>
+		/// <param name="assemblyFilename"></param>
+		/// <returns></returns>
 		public static int CreateDevice(string dllFilename, string assemblyFilename)
 		{
 			assemblyFilename = assemblyFilename.Trim();
@@ -125,6 +144,11 @@ namespace SharpSoundDevice
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="device"></param>
+		/// <returns></returns>
 		public static int GetID(IAudioDevice device)
 		{
 			if (Devices.ContainsValue(device))
@@ -133,6 +157,11 @@ namespace SharpSoundDevice
 				return -1;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public static IAudioDevice GetDevice(int id)
 		{
 			if (Devices.ContainsKey(id))
@@ -141,6 +170,11 @@ namespace SharpSoundDevice
 				return null;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public static bool DeleteDevice(int id)
 		{
 			var dev = GetDevice(id);
@@ -151,22 +185,42 @@ namespace SharpSoundDevice
 			return true;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="message"></param>
 		public static void LogDeviceMessage(IAudioDevice device, string message)
 		{
 			LogDeviceMessage(GetID(device), message);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="e"></param>
 		public static void LogDeviceException(IAudioDevice device, Exception e)
 		{
 			LogDeviceException(GetID(device), e);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="message"></param>
 		public static void LogDeviceMessage(int id, string message)
 		{
 			string filename = LogFiles.ContainsKey(id) ? LogFiles[id] : LogFile;
 			Log(message, filename);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="e"></param>
 		public static void LogDeviceException(int id, Exception e)
 		{
 			string filename = LogFiles.ContainsKey(id) ? LogFiles[id] : LogFile;
@@ -238,40 +292,6 @@ namespace SharpSoundDevice
 			}
 		}
 
-		/*public static Dictionary<string, string> GetConfig(string dllname)
-		{
-			string ConfigFilename = dllname + ".cfg";
-			Log("Attempting to load " + ConfigFilename);
-			var output = new Dictionary<string, string>();
-			if (!System.IO.File.Exists(ConfigFilename))
-			{
-				Log("Config file does not exist");
-				return output;
-			}
-
-			try
-			{
-				Log("Reading config");
-				var lines = System.IO.File.ReadAllLines(ConfigFilename);
-				foreach (var line in lines)
-				{
-					if (!line.Contains(':'))
-						continue;
-
-					var key = line.Substring(0, line.IndexOf(':')).Trim().ToLower();
-					var val = line.Substring(line.IndexOf(':') + 1).Trim();
-					output[key] = val;
-					Log("Found key: " + key + " - val: " + val);
-				}
-			}
-			catch(Exception e)
-			{
-				Log("Unexpected error: " + e.Message);
-			}
-
-			return output;
-		}*/
-
 		/// <summary>
 		/// Copies data from double** into managed 2d array
 		/// </summary>
@@ -335,6 +355,12 @@ namespace SharpSoundDevice
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="buffer"></param>
+		/// <param name="maxLen"></param>
 		public static void CopyStringToBuffer(string input, IntPtr buffer, int maxLen)
 		{
 			var bytes = Encoding.UTF8.GetBytes(input + '\0');
@@ -348,42 +374,6 @@ namespace SharpSoundDevice
 				ptr[maxLen - 1] = 0;
 			}
 		}
-
-		[DllImport("user32.dll", SetLastError = true)]
-		public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-
-#if Windows
-
-		/// <summary>
-		/// Helper methods used to dock a Wpf window inside a Vst Window.
-		/// All UI chrome is hidden away (borders, close/minimize/maximize buttons).
-		/// </summary>
-		/// <param name="WpfWindow"></param>
-		/// <param name="vstWindow"></param>
-		public static void DockWpfWindow(System.Windows.Window WpfWindow, IntPtr vstWindow)
-		{
-			WpfWindow.Top = 0;
-			WpfWindow.Left = 0;
-			WpfWindow.ShowInTaskbar = false;
-			WpfWindow.WindowStyle = System.Windows.WindowStyle.None;
-			WpfWindow.ResizeMode = System.Windows.ResizeMode.NoResize;
-			WpfWindow.Show();
-			var windowHwnd = new System.Windows.Interop.WindowInteropHelper(WpfWindow);
-			IntPtr hWnd = windowHwnd.Handle;
-			Interop.SetParent(hWnd, vstWindow);
-		}
-
-		public static void DockWinFormsPanel(System.Windows.Forms.Panel panel, IntPtr vstWindow)
-		{
-			System.Windows.Forms.Application.EnableVisualStyles();
-
-			panel.Top = 0;
-			panel.Left = 0;
-
-			Interop.SetParent(panel.Handle, vstWindow);
-		}
-
-#endif
 
 	}
 }

@@ -22,11 +22,11 @@ namespace SharpSoundDevice
 	}
 
 	/// <summary>
-	/// A class used to serialize and deserialize programs and banks in a common format.
+	/// A class used by the host / bridge plugin to serialize and deserialize programs and banks in a common format.
 	/// </summary>
 	public class ProgramData
 	{
-		static string Header = "VSTAudioDevice Version 1.0";
+		static string Header = "SharpSoundDevice Program Format, version 1000";
 		static string ProgType = "Prog";
 		static string BankType = "Bank";
 
@@ -49,6 +49,11 @@ namespace SharpSoundDevice
 		 * 
 		*/
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="program"></param>
+		/// <returns></returns>
 		public static byte[] SerializeSingleProgram(Program program)
 		{
 			string output = "";
@@ -62,6 +67,11 @@ namespace SharpSoundDevice
 			return bytes;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="programs"></param>
+		/// <returns></returns>
 		public static byte[] SerializeBank(Program[] programs)
 		{
 			string output = "";
@@ -78,6 +88,11 @@ namespace SharpSoundDevice
 			return bytes;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="device"></param>
+		/// <returns></returns>
 		public static byte[] SerializeBank(IAudioDevice device)
 		{
 			var programs = new Program[device.DeviceInfo.ProgramCount];
@@ -88,6 +103,11 @@ namespace SharpSoundDevice
 			return SerializeBank(programs);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
 		public static Program DeserializeSingleProgram(byte[] data)
 		{
 			string input = Encoding.UTF8.GetString(data);
@@ -106,6 +126,11 @@ namespace SharpSoundDevice
 			return output;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
 		public static Program[] DeserializeBank(byte[] data)
 		{
 			var output = new List<Program>();
@@ -129,6 +154,11 @@ namespace SharpSoundDevice
 			return output.ToArray();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="data"></param>
+		/// <param name="device"></param>
 		public static void DeserializeBank(byte[] data, IAudioDevice device)
 		{
 			var programs = DeserializeBank(data);

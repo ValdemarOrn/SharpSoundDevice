@@ -16,13 +16,15 @@ namespace SharpSoundDevice
 		public string Name { get; set; }
 
 		/// <summary>
-		/// The index of the parameter
+		/// The index of the parameter.
+		/// All parameters declared by an IAudioDevice must have a unique index, starting at zero
 		/// </summary>
 		public uint Index { get; set; }
 
 		/// <summary>
 		/// Indicates resolution / number of steps the parameter has.
 		/// Set to zero for infinite resolution.
+		/// Defined in the VST standard, but unsupported by almost all hosts.
 		/// </summary>
 		public uint Steps { get; set; }
 
@@ -33,7 +35,7 @@ namespace SharpSoundDevice
 		public double Value { get; set; }
 
 		/// <summary>
-		/// The formatted display value of the parameter
+		/// The formatted display value of the parameter.
 		/// </summary>
 		public string Display { get; set; }
 	}

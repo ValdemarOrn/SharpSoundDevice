@@ -22,6 +22,7 @@ public:
 
 	AudioDevice* Device;
 
+	double Samplerate;
 	int InputChannelCount;
 	int OutputChannelCount;
 	void calculatePortCount();
