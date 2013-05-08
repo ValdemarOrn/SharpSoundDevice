@@ -2,11 +2,11 @@
 
 This quickstart guide shows how to create a very simple SharpSoundDevice plugin with Visual Studio 2010 Express.
 
-[You can download the demo projects here]()
+[You can download the demo projects here](../../tree/master/Quickstart)
 
 ## 1. Download the latest version
 
-You can find compiled builds in the [Builds directory]() on Github. Get the latest stable version and extract it in a good location on your computer.
+You can find compiled builds in the [Builds directory](/tree/master/Builds) on Github. Get the latest stable version and extract it in a good location on your computer.
 
 ## 2. Start a new Project
 
@@ -32,7 +32,7 @@ Right click *References* and select *Add Reference*. Find the SharpSoundDevice.d
 IAudioDevice is the main interface. It is the interface that the host / plugin bridge uses to interact with your plugin. Your class needs to implement the methods and properties defined by the interface (it will warn you with a compile error if you don't).
 
 ### Demo 1a
-*The following is code that implements a very simple gain control plugin. It has one stereo input, one stereo output, two parameters that control the volume of the left and right channels and a single program. This is **all** the code you need to compile.*
+*The following is code that implements a very simple gain control plugin. It has one stereo input, one stereo output, two parameters that control the volume of the left and right channels and a single program. This is ALL the code you need to compile.*
 
     using System;
     using System.Collections.Generic;
@@ -507,12 +507,16 @@ The following is a simple sine-wave synthesizer that responds to MIDI note-on an
 
 The basic structure of this plugin is very similar to the previous example. I won't go into much detail about how ProcessSample works, but what might interest you is the SendEvent method.
 
-When a plugin receives a Midi event the data contains raw midi messages. That means you need to know the Midi specification. [A good reference is here](http://home.roadrunner.com/~jgglatt/tech/midispec.htm)
+When a plugin receives a Midi event the data contains raw midi messages. That means you need to know the Midi specification. 
+
+[A good reference is here](http://home.roadrunner.com/~jgglatt/tech/midispec.htm)
 
 
 ## Documentation
 
-[View the documentation]()
+Documentation is still limited, but (almost) all public entities in the SharpSoundDevice library have code comments that should answer most questions.
+
+[Documented source code for SharpSoundDevice Assembly](../../tree/master/SharpSoundDevice)
 
 
 ## Bug Reports and Feedback

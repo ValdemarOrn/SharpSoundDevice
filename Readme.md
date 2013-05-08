@@ -1,6 +1,6 @@
 # Introduction
 
-SharpSoundDevice is a library that allows you to develop VST-compatible plugins (or "*devices*") using .NET. A plugin developer can reference the SharpSoundDevice.dll assembly, develop a plugin that implmenents the IAudioDevice interface and load it in any VST 2.4 -compatible host.
+SharpSoundDevice is a library that allows you to develop VST-compatible plugins (or "devices") using .NET. A plugin developer can reference the SharpSoundDevice.dll assembly, develop a plugin that implmenents the IAudioDevice interface and load it in any VST 2.4 -compatible host.
 
 ![](img/Flow_small.png)
 
@@ -14,19 +14,19 @@ SharpSoundDevice is a library that allows you to develop VST-compatible plugins 
 
 The quickstart contains 2 demo plugins and covers the development process.
 
-[View the quickstart guide]()
+[View the quickstart guide](/blob/master/Quickstart.md)
 
 # Download
 
 Stable versions are provided as compiled 32 bit Windows binaries. (64 bit support it planned)
 
-[Get the latest version from the Github repository.]()
+[Get the latest version from the Github repository.](/tree/master/Builds)
 
 # License
 
 SharpSoundDevice is licensed under the MIT license.
 
-[View the license.]()
+[View the license.](/blob/master/license.txt)
 
 # Example Plugins
 
@@ -36,7 +36,7 @@ First, look at the Quickstart. Once you get through that, have a look at [my plu
 
 Documentation is still limited, but (almost) all public entities in the SharpSoundDevice library have code comments that should answer most questions.
 
-[Documented source code for SharpSoundDevice Assembly](https://github.com/ValdemarOrn/SharpSoundDevice/tree/master/SharpSoundDevice)
+[Documented source code for SharpSoundDevice Assembly](/tree/master/SharpSoundDevice)
 
 ## Current Limitations
 
@@ -47,6 +47,6 @@ Documentation is still limited, but (almost) all public entities in the SharpSou
 
 ## To Build
 
-You don't need to build the library from source in order to develop plugins. You can download the latest stable version [from here]()
+You don't need to build the library from source in order to develop plugins. You can download the latest stable version [from here](/tree/master/Builds)
 
 You need VST 2.4 SDK to compile from source. The SDK is *not* open source and must be downloaded directly from Steinberg. However, compiled version of the libraries can be freely distributed in compliance with the license.
