@@ -6,7 +6,7 @@ This quickstart guide shows how to create a very simple SharpSoundDevice plugin 
 
 ## 1. Download the latest version
 
-You can find compiled builds in the [Builds directory](/tree/master/Builds) on Github. Get the latest stable version and extract it in a good location on your computer.
+You can find compiled builds in the [Builds directory](../../tree/master/Builds) on Github. Get the latest stable version and extract it in a good location on your computer.
 
 ## 2. Start a new Project
 
