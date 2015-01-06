@@ -17,12 +17,12 @@ namespace SharpSoundDevice
 	{
 		static object LockObject = new object();
 
-		static int CurrentID = 1000;
+		static int CurrentID = 1;
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public static Dictionary<int, IAudioDevice> Devices = new Dictionary<int, IAudioDevice>();
+		public static List<IAudioDevice> Devices = new List<IAudioDevice> { null };
 		
 		/// <summary>
 		/// 
@@ -40,7 +40,7 @@ namespace SharpSoundDevice
 			var ts = "<" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff ") + "> ";
 			try
 			{
-				for(int i=0; i<10; i++)
+				for(int i = 0; i < 10; i++)
 				{
 					try
 					{
@@ -51,9 +51,9 @@ namespace SharpSoundDevice
 					System.Threading.Thread.Sleep(50);
 				}
 			}
-			catch(Exception)
+			catch
 			{
-				
+				// Unable to log
 			}
 #endif
 		}
@@ -77,8 +77,7 @@ namespace SharpSoundDevice
 			
 			lock(LockObject)
 			{
-				int id = 0;
-				id = CurrentID;
+				int id = CurrentID;
 				CurrentID++;
 
 				LogFile = dllFilename + ".log";
@@ -136,7 +135,7 @@ namespace SharpSoundDevice
 					return -1;
 				}
 
-				Devices[id] = instance;
+				Devices.Add(instance); // extend list by one
 				LogFiles[id] = LogFile;
 
 				Log("Object successfully loaded");
@@ -151,10 +150,10 @@ namespace SharpSoundDevice
 		/// <returns></returns>
 		public static int GetID(IAudioDevice device)
 		{
-			if (Devices.ContainsValue(device))
-				return Devices.First(x => x.Value == device).Key;
-			else
+			if (device == null)
 				return -1;
+
+			return Devices.IndexOf(device);
 		}
 
 		/// <summary>
@@ -164,7 +163,7 @@ namespace SharpSoundDevice
 		/// <returns></returns>
 		public static IAudioDevice GetDevice(int id)
 		{
-			if (Devices.ContainsKey(id))
+			if (id > 0 && id < Devices.Count)
 				return Devices[id];
 			else
 				return null;
@@ -181,7 +180,7 @@ namespace SharpSoundDevice
 			if (dev == null)
 				return true;
 
-			Devices.Remove(id);
+			Devices[id] = null;
 			return true;
 		}
 

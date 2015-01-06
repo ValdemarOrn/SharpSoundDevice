@@ -77,5 +77,10 @@ namespace SharpSoundDevice
 		/// the correct size of the editor window.
 		/// </summary>
 		public int EditorHeight { get; set; }
+
+		/// <summary>
+		/// When set to true, the host will call the unsafe ProcessSample method
+		/// </summary>
+		public bool UnsafeProcessing { get; set; }
 	}
 }

@@ -43,7 +43,57 @@ void VstPluginBridgeEditor::close ()
 bool VstPluginBridgeEditor::getRect (ERect **ppErect)
 {
 	*ppErect = &rect;
-	return false;
-	
-	
+	return false;	
 }
+
+bool VstPluginBridgeEditor::onKeyDown(VstKeyCode& keyCode)
+{
+	GuiEvent data;
+	data.Type = _KEYDOWN;
+	data.Key = keyCode.character;
+	data.Modifier = keyCode.modifier;
+	data.Virtual = keyCode.virt;
+	data.Scroll = 0.0;
+
+	Event ev;
+	ev.Data = &data;
+	ev.DataLength = 0;
+	ev.EventIndex = 0;
+	ev.Type = _GUIEVENT;
+	return Device->SendEvent(&ev);
+}
+
+bool VstPluginBridgeEditor::onKeyUp(VstKeyCode& keyCode)
+{
+	GuiEvent data;
+	data.Type = _KEYUP;
+	data.Key = keyCode.character;
+	data.Modifier = keyCode.modifier;
+	data.Virtual = keyCode.virt;
+	data.Scroll = 0.0;
+
+	Event ev;
+	ev.Data = &data;
+	ev.DataLength = 0;
+	ev.EventIndex = 0;
+	ev.Type = _GUIEVENT;
+	return Device->SendEvent(&ev);
+}
+
+bool VstPluginBridgeEditor::onWheel(float distance)
+{
+	GuiEvent data;
+	data.Type = _MOUSEWHEEL;
+	data.Key = 0;
+	data.Modifier = 0;
+	data.Virtual = 0;
+	data.Scroll = distance;
+
+	Event ev;
+	ev.Data = &data;
+	ev.DataLength = 0;
+	ev.EventIndex = 0;
+	ev.Type = _GUIEVENT;
+	return Device->SendEvent(&ev);
+}
+

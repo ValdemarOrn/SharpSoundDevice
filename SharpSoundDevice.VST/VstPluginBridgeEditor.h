@@ -20,6 +20,10 @@ public:
 	virtual void close ();
 	virtual bool isOpen () { return Open; }
 
+	virtual bool onKeyDown(VstKeyCode& keyCode);
+	virtual bool onKeyUp(VstKeyCode& keyCode);
+	virtual bool onWheel(float distance);
+
 	bool Open;
 	bool getRect (ERect** rect);
 

@@ -216,7 +216,8 @@ public:
 	}
 
 	// This is used to look for a missing assembly. If the assembly is not located in the same directory as
-	// the host process (very unlikely) we instruct the .NET runtime to look in the same directory as this dll
+	// the host process (very unlikely as most peopel have a separate VST plugin directory) we instruct 
+	// the .NET runtime to look in the same directory as this dll
 	static Reflection::Assembly^ loadAsm(Object^ sender, ResolveEventArgs^ args)
 	{
 		String^ folderPath = System::IO::Path::GetDirectoryName(Reflection::Assembly::GetExecutingAssembly()->Location);
@@ -245,6 +246,7 @@ int CreateDevice()
 	GetModuleFileName(thismodule,dllName,256);
 	
 	// The patcher is used to replace this value
+	// Note: The patcher literally does a binary replacement on this string, do not mess with it!
 	const char* assemblyName = "::PLACEHOLDER::                                                                                                                                                                                                  ";
 
 	int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
@@ -353,6 +355,7 @@ DeviceInfo* AudioDevice::GetDeviceInfo()
 		devInfo->VstId = info->VstId;
 		devInfo->EditorWidth = info->EditorWidth;
 		devInfo->EditorHeight = info->EditorHeight;
+		devInfo->UnsafeProcessing = info->UnsafeProcessing;
 
 		return devInfo;
 	}
@@ -447,7 +450,7 @@ int AudioDevice::GetCurrentProgram()
 }
 
 
-void AudioDevice::SendEvent(Event* event)
+bool AudioDevice::SendEvent(Event* event)
 {
 	try
 	{
@@ -473,8 +476,21 @@ void AudioDevice::SendEvent(Event* event)
 		{
 			ev->Data = nullptr;
 		}
+		else if (event->Type == _GUIEVENT)
+		{
+			GuiEvent* evData = (GuiEvent*)event->Data;
+			SharpSoundDevice::GuiEvent^ guiEv = gcnew SharpSoundDevice::GuiEvent();
+			guiEv->Key = evData->Key;
+			guiEv->Modifier = evData->Modifier;
+			guiEv->Virtual = evData->Virtual;
+			guiEv->Scroll = evData->Scroll;
+			guiEv->Type = (SharpSoundDevice::GuiEventType)evData->Type;
 
-		dev->SendEvent(*ev);
+			ev->Data = guiEv;
+		}
+
+		bool output = dev->SendEvent(*ev);
+		return output;
 	}
 	catch(Exception^ e)
 	{
@@ -487,12 +503,18 @@ void AudioDevice::ProcessSample(double** input, double** output, unsigned int bu
 	try
 	{
 		SharpSoundDevice::IAudioDevice^ dev = SharpSoundDevice::Interop::GetDevice(AudioDeviceID);
-		array<array<double>^>^ inp = SharpSoundDevice::Interop::GetManagedSamples((IntPtr)input, InputChannelCount, bufferSize);
-		array<array<double>^>^ outp = SharpSoundDevice::Interop::GetEmptyArrays(OutputChannelCount, bufferSize);
 
-		dev->ProcessSample(inp, outp, bufferSize);
-
-		SharpSoundDevice::Interop::CopyToUnmanaged(outp, (IntPtr)output, OutputChannelCount, bufferSize);
+		if (dev->DeviceInfo.UnsafeProcessing)
+		{
+			dev->ProcessSample((IntPtr)input, (IntPtr)output, this->InputChannelCount, this->OutputChannelCount, bufferSize);
+		}
+		else
+		{
+			array<array<double>^>^ inp = SharpSoundDevice::Interop::GetManagedSamples((IntPtr)input, InputChannelCount, bufferSize);
+			array<array<double>^>^ outp = SharpSoundDevice::Interop::GetEmptyArrays(OutputChannelCount, bufferSize);
+			dev->ProcessSample(inp, outp, bufferSize);
+			SharpSoundDevice::Interop::CopyToUnmanaged(outp, (IntPtr)output, OutputChannelCount, bufferSize);
+		}
 	}
 	catch(Exception^ e)
 	{

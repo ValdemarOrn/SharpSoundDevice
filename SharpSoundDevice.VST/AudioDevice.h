@@ -19,12 +19,20 @@ enum DeviceType
 	_MIDIDEVICE
 };
 
+enum GuiEventType
+{
+	_KEYDOWN = 1,
+	_KEYUP,
+	_MOUSEWHEEL
+};
+
 enum EventType
 {
 	_PARAMETER = 1,
 	_MIDI,
 	_PROGRAM,
-	_WINDOWSIZE
+	_WINDOWSIZE,
+	_GUIEVENT
 };
 
 #pragma pack(push, 4)
@@ -42,6 +50,7 @@ typedef struct
 	bool HasEditor;
 	int EditorWidth;
 	int EditorHeight;
+	bool UnsafeProcessing;
 
 } DeviceInfo;
 
@@ -105,6 +114,16 @@ typedef struct
 
 } Event;
 
+typedef struct
+{
+	GuiEventType Type;
+	int Key;
+	int Virtual;
+	int Modifier;
+	float Scroll;
+
+} GuiEvent;
+
 #pragma pack(pop)
 
 class AudioDevice
@@ -134,7 +153,7 @@ public:
 	PortInfo* GetPortInfo();
 	int GetCurrentProgram();
 
-	void SendEvent(Event* ev);
+	bool SendEvent(Event* ev);
 	void ProcessSample(double** input, double** output, unsigned int bufferSize);
 
 	void OpenEditor(void* parentWindow);

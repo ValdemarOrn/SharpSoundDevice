@@ -63,7 +63,7 @@ namespace SharpSoundDevice
 		/// See the Event struct for more information about events.
 		/// </summary>
 		/// <param name="ev">The event to pass into the device</param>
-		void SendEvent(Event ev);
+		bool SendEvent(Event ev);
 
 		/// <summary>
 		/// The main processing loop. The host calls this method, supplying the input arguments.
@@ -85,6 +85,16 @@ namespace SharpSoundDevice
 		/// </param>
 		/// <param name="bufferSize">the number of samples in the buffers</param>
 		void ProcessSample(double[][] input, double[][] output, uint bufferSize);
+
+		/// <summary>
+		/// Unsafe Processing method
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="output"></param>
+		/// <param name="outChannelCount"></param>
+		/// <param name="bufferSize"></param>
+		/// <param name="inChannelCount"></param>
+		void ProcessSample(IntPtr input, IntPtr output, uint inChannelCount, uint outChannelCount, uint bufferSize);
 
 		/// <summary>
 		/// Called by the host when the device editor should be displayed.

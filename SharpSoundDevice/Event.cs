@@ -23,6 +23,7 @@ namespace SharpSoundDevice
 		///		offset from the start of the current sample buffer.
 		/// EventType = ProgramChange: The index of the newly selected program.
 		/// EventType = WindowSize: Unused.
+		/// EventType = GuiEvent: Unused.
 		/// </summary>
 		public int EventIndex { get; set; }
 
@@ -34,6 +35,7 @@ namespace SharpSoundDevice
 		///		For sysex data, the length corresponds to the number of sysex bytes sent.
 		/// EventType = ProgramChange: Unused.
 		/// EventType = WindowSize: Unused.
+		/// EventType = GuiEvent: KeyEvent.
 		/// </summary>
 		public object Data { get; set; }
 	}

@@ -48,6 +48,13 @@ namespace SharpSoundDevice
 		Midi = 3
 	}
 
+	public enum GuiEventType
+	{
+		KeyDown = 1,
+		KeyUp,
+		Mousewheel
+	}
+
 	/// <summary>
 	/// The type of event that is being signaled.
 	/// </summary>
@@ -76,6 +83,11 @@ namespace SharpSoundDevice
 		/// Alert the host that the plugin is requesting the GUI window to be resized.
 		///	Needed because of compatibility with VST.
 		/// </summary>
-		WindowSize = 4
+		WindowSize = 4,
+		
+		/// <summary>
+		/// Gui events, KeyDown, KeyUp, MouseWheel
+		/// </summary>
+		GuiEvent = 5
 	}
 }
