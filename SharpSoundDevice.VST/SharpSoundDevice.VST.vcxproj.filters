@@ -48,6 +48,12 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AssemblyInitializer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HostInfoClass.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioDevice.cpp">
@@ -66,6 +72,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VstPluginBridgeEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HostInfoClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssemblyInitializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

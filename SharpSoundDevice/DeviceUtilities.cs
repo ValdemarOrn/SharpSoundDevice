@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -62,6 +63,89 @@ namespace SharpSoundDevice
 
 			for (int i = 0; i < parameters.Length; i++)
 				parameters[i].Value = select[i];
+		}
+
+		/// <summary>
+		/// Copies data from double** into managed 2d array
+		/// </summary>
+		/// <param name="ptr"></param>
+		/// <param name="InputPortCount"></param>
+		/// <param name="bufferSize"></param>
+		/// <returns></returns>
+		public static double[][] GetManagedSamples(IntPtr ptr, int InputPortCount, uint bufferSize)
+		{
+			unsafe
+			{
+				double** input = (double**)ptr;
+
+				var output = new double[InputPortCount][];
+				for (int i = 0; i < InputPortCount; i++)
+				{
+					double[] ch = new double[bufferSize];
+					output[i] = ch;
+
+					Marshal.Copy((IntPtr)input[i], ch, 0, (int)bufferSize);
+				}
+
+				return output;
+			}
+		}
+
+		/// <summary>
+		/// Creates an empty 2d managed array
+		/// </summary>
+		/// <param name="InputPortCount"></param>
+		/// <param name="bufferSize"></param>
+		/// <returns></returns>
+		public static double[][] GetEmptyArrays(int InputPortCount, uint bufferSize)
+		{
+			var output = new double[InputPortCount][];
+
+			for (int i = 0; i < InputPortCount; i++)
+				output[i] = new double[bufferSize];
+
+			return output;
+		}
+
+		/// <summary>
+		/// Copies data from a managed 2d array into an unmanaged double**
+		/// </summary>
+		/// <param name="outp"></param>
+		/// <param name="ptr"></param>
+		/// <param name="OutputPortCount"></param>
+		/// <param name="bufferSize"></param>
+		public static void CopyToUnmanaged(double[][] outp, IntPtr ptr, int OutputPortCount, uint bufferSize)
+		{
+			unsafe
+			{
+				double** output = (double**)ptr;
+
+				for (int i = 0; i < OutputPortCount; i++)
+				{
+					void* channel = output[i];
+					Marshal.Copy(outp[i], 0, (IntPtr)channel, (int)bufferSize);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="buffer"></param>
+		/// <param name="maxLen"></param>
+		public static void CopyStringToBuffer(string input, IntPtr buffer, int maxLen)
+		{
+			var bytes = Encoding.UTF8.GetBytes(input + '\0');
+			int count = (maxLen < bytes.Length) ? maxLen : bytes.Length;
+			Marshal.Copy(bytes, 0, buffer, count);
+
+			// add null terminator at end of buffer
+			unsafe
+			{
+				byte* ptr = (byte*)buffer;
+				ptr[maxLen - 1] = 0;
+			}
 		}
 
 #if Windows

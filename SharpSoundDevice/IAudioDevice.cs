@@ -36,6 +36,11 @@ namespace SharpSoundDevice
 		void Stop();
 
 		/// <summary>
+		/// Set by the plugin bridge, globally unique identifier specifying the device instance
+		/// </summary>
+		int DeviceId { get; set; }
+
+		/// <summary>
 		/// Struct containing information about the current device. 
 		/// See DeviceInfo struct for more info.
 		/// </summary>

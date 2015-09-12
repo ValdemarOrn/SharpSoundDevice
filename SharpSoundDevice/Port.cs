@@ -8,6 +8,7 @@ namespace SharpSoundDevice
 	/// <summary>
 	/// A class containing port information.
 	/// </summary>
+	[Serializable]
 	public struct Port
 	{
 		/// <summary>

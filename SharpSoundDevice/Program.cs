@@ -8,6 +8,7 @@ namespace SharpSoundDevice
 	/// <summary>
 	/// A struct containing program data.
 	/// </summary>
+	[Serializable]
 	public struct Program
 	{
 		/// <summary>
@@ -24,6 +25,7 @@ namespace SharpSoundDevice
 	/// <summary>
 	/// A class used by the host / bridge plugin to serialize and deserialize programs and banks in a common format.
 	/// </summary>
+	[Serializable]
 	public class ProgramData
 	{
 		static string Header = "SharpSoundDevice Program Format, version 1000";

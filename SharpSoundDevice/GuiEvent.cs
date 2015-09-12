@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SharpSoundDevice
 {
+	[Serializable]
 	public class GuiEvent
 	{
 		public GuiEventType Type { get; set; }

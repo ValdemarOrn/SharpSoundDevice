@@ -8,6 +8,7 @@ namespace SharpSoundDevice
 	/// <summary>
 	/// A class containing parameter info.
 	/// </summary>
+	[Serializable]
 	public class Parameter
 	{
 		/// <summary>

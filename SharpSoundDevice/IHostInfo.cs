@@ -14,9 +14,9 @@ namespace SharpSoundDevice
 		/// Method used to send events from device to host.
 		/// See Event struct for more info.
 		/// </summary>
-		/// <param name="sender">The device that is sending the event.</param>
+		/// <param name="pluginSenderId">The id of the device that is sending the event.</param>
 		/// <param name="ev">Event sent from device to host.</param>
-		void SendEvent(IAudioDevice sender, Event ev);
+		void SendEvent(int pluginSenderId, Event ev);
 
 		/// <summary>
 		/// Returns the current BPM (beats per minute) of the host.

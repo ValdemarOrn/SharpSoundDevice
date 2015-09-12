@@ -49,7 +49,7 @@ namespace BridgeGenerator
 
 			if(idx == -1)
 			{
-				Console.WriteLine("An error occured. Template.VST.dll is not a valid SharpSoundDevice DLL!");
+				Console.WriteLine("An error occured. " + TemplateName + " is not a valid SharpSoundDevice DLL!");
 				return;
 			}
 
@@ -65,9 +65,7 @@ namespace BridgeGenerator
 
 			if (File.Exists(outputFile))
 			{
-				Console.WriteLine("There already exists a file named " + outputFile);
-				Console.WriteLine("Rename or remove the file before trying again");
-				return;
+				File.Delete(outputFile);
 			}
 
 			File.WriteAllBytes(outputFile, template);

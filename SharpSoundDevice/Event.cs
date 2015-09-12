@@ -8,6 +8,7 @@ namespace SharpSoundDevice
 	/// <summary>
 	/// A structure that carrying event data from device-to-host, or host-to-device
 	/// </summary>
+	[Serializable]
 	public struct Event
 	{
 		/// <summary>
