@@ -7,6 +7,8 @@ using System.Text;
 
 namespace SharpSoundDevice
 {
+	/*
+	/// This is a plugin Loader that loads each plugin into a separate appDomain. Unfortunately, the overhead of passing between domains is too big, performance goes to shit.
 	public class PluginMarshall : MarshalByRefObject, IAudioDevice
 	{
 		#region SetupRegion
@@ -69,7 +71,7 @@ namespace SharpSoundDevice
 			return appDomain;
 		}
 
-		/*
+		
 		private class DomainResolver : MarshalByRefObject
 		{
 			private readonly string assemblyFilename;
@@ -101,7 +103,7 @@ namespace SharpSoundDevice
 				return requestedAssembly;
 			}
 		}
-		*/
+		
 
 		/// <summary>
 		/// Works within an isolated AppDomain.
@@ -287,4 +289,5 @@ namespace SharpSoundDevice
 			Instance.Stop();
         }
 	}
+	*/
 }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,28 +18,25 @@ namespace SharpSoundDevice
 	/// 
 	/// Not to be used by plugin devices!
 	/// </summary>
-	/*public static class Logging
+	public static class Logging
 	{
 		private static string logfile;
 		private static FileStream logfileStream;
 		private static ConcurrentQueue<string> logQueue;
 
-		[DllImport("kernel32.dll", SetLastError = true)]
-		private static extern int AllocConsole();
-
 		static Logging()
 		{
-			AllocConsole();
-
 			logQueue = new ConcurrentQueue<string>();
 			var dir = Path.Combine(Environment.ExpandEnvironmentVariables("%AppData%"), "SharpSoundDevice", "Logs");
 			Directory.CreateDirectory(dir);
-			var filename = string.Format("SharpSoundDevice-{0:yyyy-MM-dd-HHmmss}-{1}.log", DateTime.Now, AppDomain.CurrentDomain.FriendlyName);
+			var filename = string.Format("SharpSoundDevice-{0:yyyy-MM-dd-HHmmss}.log", DateTime.Now);
 			logfile = Path.Combine(dir, filename);
 
 			Log(string.Format("Initializing SharpSoundDevice system.\nProcess: {0}\nExecutable: {1}", 
 				Process.GetCurrentProcess().ProcessName,
 				Process.GetCurrentProcess().MainModule.FileName));
+
+			CleanupOldLogs(dir);
 
 			// logger lives for entire process lifespan, no need to dispose
 			logfileStream = new FileStream(logfile, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
@@ -48,6 +46,35 @@ namespace SharpSoundDevice
 			flusher.Start();
 
 			AppDomain.CurrentDomain.ProcessExit += (s, e) => FlushInternal();
+		}
+
+		/// <summary>
+		/// Removes log files older than 60 days
+		/// </summary>
+		/// <param name="dir"></param>
+		private static void CleanupOldLogs(string dir)
+		{
+			var files = Directory.GetFiles(dir).Where(x => Path.GetFileName(x).StartsWith("SharpSoundDevice-")).ToArray();
+			foreach (var file in files)
+			{
+				var dateString = Path.GetFileNameWithoutExtension(file.Replace("SharpSoundDevice-", ""));
+				DateTime date;
+				var ok = DateTime.TryParseExact(dateString, "yyyy-MM-dd-HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+				if (!ok)
+					continue;
+
+				if ((DateTime.Today - date.Date).TotalDays > 60)
+				{
+					try
+					{
+						File.Delete(file);
+					}
+					catch (Exception ex)
+					{
+						Log(string.Format("Unable to clean up old logfile '{0}'\n{1}", file, ex.GetTrace()));
+					}
+				}
+			}
 		}
 
 		private static void FlushLogs()
@@ -141,5 +168,5 @@ namespace SharpSoundDevice
 
 			return message;
 		}
-	}*/
+	}
 }

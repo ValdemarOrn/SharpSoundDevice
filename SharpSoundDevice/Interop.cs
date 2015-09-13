@@ -48,14 +48,14 @@ namespace SharpSoundDevice
 				Logging.Log("Assembly name: " + assemblyName);
 				var bridgeDllDir = Path.GetDirectoryName(dllFilename);
 				Logging.Log("Bridge Dll Dir: " + bridgeDllDir);
-				var wrapperInstance = PluginMarshall.Create(assemblyName, bridgeDllDir);
+				var instance = PluginLoader.Create(assemblyName, bridgeDllDir);
 
-				if (wrapperInstance == null)
+				if (instance == null)
 					return -1;
 
-				Devices.Add(wrapperInstance); // extend list by one
-				wrapperInstance.DeviceId = GetID(wrapperInstance);
-                Logging.Log("Object successfully loaded, DeviceId: " + GetID(wrapperInstance));
+				Devices.Add(instance); // extend list by one
+				instance.DeviceId = GetID(instance);
+                Logging.Log("Object successfully loaded, DeviceId: " + GetID(instance));
 				return id;
 			}
 		}

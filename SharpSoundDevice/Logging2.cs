@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace SharpSoundDevice
 {
-	public static class LogAppender
+	/*public static class LogAppender
 	{
 		public static int UdpPort = 43219;
 
@@ -184,5 +184,5 @@ namespace SharpSoundDevice
 
 			return message;
 		}
-	}
+	}*/
 }

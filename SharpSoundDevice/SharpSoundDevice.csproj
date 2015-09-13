@@ -107,6 +107,7 @@
     <Compile Include="Logging2.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Parameter.cs" />
+    <Compile Include="PluginLoader.cs" />
     <Compile Include="PluginMarshall.cs" />
     <Compile Include="Port.cs" />
     <Compile Include="Program.cs" />

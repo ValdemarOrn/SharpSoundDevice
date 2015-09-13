@@ -1,21 +1,24 @@
 
-#include "AudioDevice.h"
 #include "string.h"
-#include "VstPluginBridge.h"
 #include <Windows.h>
 
-
+#include "AudioDevice.h"
+#include "VstPluginBridge.h"
 #include "AssemblyInitializer.h"
 #include "HostInfoClass.h"
 
 #using <mscorlib.dll>
 #using <System.dll>
+
 using namespace System;
-using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 using namespace SharpSoundDevice::VST;
 
 // ---------------------- Create a managed AudioDevice object ----------------------
+
+// The patcher is used to replace this value
+// Note: The patcher literally does a binary replacement on this string, do not mess with it!
+const char* assemblyName = "::PLACEHOLDER::                                                                                                                                                                                                  ";
 
 HINSTANCE GetMyModuleHandle()
 {
@@ -26,16 +29,13 @@ HINSTANCE GetMyModuleHandle()
 
 int CreateDevice()
 {
-	SharpSoundDevice::LogAppender::Start();
-
 	char dllName[256];
 	HINSTANCE thismodule = GetMyModuleHandle();
 	GetModuleFileName(thismodule,dllName,256);
 
-	// The patcher is used to replace this value
-	// Note: The patcher literally does a binary replacement on this string, do not mess with it!
-	const char* assemblyName = "::PLACEHOLDER::                                                                                                                                                                                                  ";
-
+	SharpSoundDevice::Logging::Log("");
+	SharpSoundDevice::Logging::Log("===============================================================================================");
+	SharpSoundDevice::Logging::Log("");
 	SharpSoundDevice::Logging::Log("Creating new device, SharpSoundDevice.VST (Bridge) Version: " + System::Reflection::Assembly::GetExecutingAssembly()->FullName);
 	int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
 	return deviceID;
@@ -45,8 +45,19 @@ int CreateDevice()
 
 AudioDevice::AudioDevice()
 {
-	AssemblyLoader::AddAssemblyResolver();
-	this->AudioDeviceID = CreateDevice();
+	try
+	{
+		AllocConsole();
+		System::String^ assemblyNameStr = (gcnew String(assemblyName))->Trim();
+		AssemblyLoader::AddAssemblyResolver(assemblyNameStr);
+		this->AudioDeviceID = CreateDevice();
+	}
+	catch (System::Exception^ ex)
+	{
+		Console::WriteLine(ex->Message);
+		Console::WriteLine(ex->StackTrace);
+		return;
+	}
 
 	this->InputChannelCount = -1;
 	this->OutputChannelCount = -1;
@@ -293,18 +304,7 @@ void AudioDevice::ProcessSample(double** input, double** output, unsigned int bu
 		{
 			array<array<double>^>^ inp = SharpSoundDevice::DeviceUtilities::GetManagedSamples((IntPtr)input, InputChannelCount, bufferSize);
 			array<array<double>^>^ outp = SharpSoundDevice::DeviceUtilities::GetEmptyArrays(OutputChannelCount, bufferSize);
-			
-			System::Diagnostics::Stopwatch^ t = gcnew System::Diagnostics::Stopwatch();
-			t->Start();
-
 			dev->ProcessSample(inp, outp, bufferSize);
-
-			t->Stop();
-			double elapsed = t->ElapsedTicks;
-			AssemblyLoader::times->Add(elapsed);
-			while (AssemblyLoader::times->Count > 1000)
-				AssemblyLoader::times->RemoveAt(0);
-
 			SharpSoundDevice::DeviceUtilities::CopyToUnmanaged(outp, (IntPtr)output, OutputChannelCount, bufferSize);
 		}
 	}

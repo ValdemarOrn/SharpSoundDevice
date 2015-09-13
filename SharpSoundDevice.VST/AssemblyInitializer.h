@@ -13,11 +13,12 @@ namespace SharpSoundDevice
 		public ref class AssemblyLoader
 		{
 		private:
-			static Boolean Loaded;
+			static bool Loaded;
+			static System::Collections::Generic::Dictionary<System::String^, System::String^>^ pluginPaths = gcnew System::Collections::Generic::Dictionary<System::String^, System::String^>();
+
+			static System::Reflection::Assembly^ LoadAsm(Object^ sender, ResolveEventArgs^ args);
 		public:
-			static void AddAssemblyResolver();
-			static System::Reflection::Assembly^ loadAsm(Object^ sender, ResolveEventArgs^ args);
-			static System::Collections::Generic::List<double>^ times = gcnew System::Collections::Generic::List<double>();
+			static void AddAssemblyResolver(System::String^ assemblyName);
 		};
 	}
 }
