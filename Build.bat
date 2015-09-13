@@ -1,3 +1,4 @@
+rd /S /Q bin
 msbuild SharpSoundDevice.sln /p:Configuration=Debug,Platform=x86
 msbuild SharpSoundDevice.sln /p:Configuration=Release,Platform=x86
 msbuild SharpSoundDevice.sln /p:Configuration=Debug,Platform=x64
@@ -14,4 +15,4 @@ rm ../SharpSoundDevice-%ts%.zip
 7z a ../SharpSoundDevice-%ts%.zip -r *.*
 cd..
 cd..
-rd Builds\Current /s /q
+rd /S /Q Builds\Current
