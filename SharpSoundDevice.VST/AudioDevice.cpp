@@ -47,7 +47,9 @@ AudioDevice::AudioDevice()
 {
 	try
 	{
+#ifdef _DEBUG
 		AllocConsole();
+#endif
 		System::String^ assemblyNameStr = (gcnew String(assemblyName))->Trim();
 		AssemblyLoader::AddAssemblyResolver(assemblyNameStr);
 		this->AudioDeviceID = CreateDevice();
