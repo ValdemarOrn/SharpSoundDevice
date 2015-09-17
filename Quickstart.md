@@ -34,6 +34,8 @@ IAudioDevice is the main interface. It is the interface that the host / plugin b
 ### Demo 1a
 *The following is code that implements a very simple gain control plugin. It has one stereo input, one stereo output, two parameters that control the volume of the left and right channels and a single program. This is ALL the code you need to compile.*
 
+*The following code is slightly out of date, it does not contain a required method that was added in version 1.4.1*
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -198,6 +200,12 @@ The Bridge Generator creates a new dll, called Bridge.SimplePlugin.dll
 
 This Bridge DLL contains both native (C++) code, to interact with the VST host, as well as .NET code to interact with your plugin. To create the file, the BridgeGenerator simply takes a template dll (SharpSoundDevice.VST.dll) and does a binary patch to replace a placeholder value inside the dll file with the name of your .NET assembly.
 
+You can rename the Bridge dll if you want. You can also place it in the parent directory, as long as all the required dlls are contained in a folder with the same name as the .NET assembly. So for example, you can have:
+
+	Bridge.SimplePlugin.dll
+	  .\SimplePlugin\SharpSoundDevice.dll
+	  .\SimplePlugin\SimplePlugin.dll
+	  .\SimplePlugin\AudioLib.dll
 
 
 
@@ -221,7 +229,11 @@ Now, start your VST host and try out your new plugin!
 
 ## 8. Troubleshooting & Debugging
 
-The plugin bridge writes a log file and logs every step of the assembly loading process. It is located in the same directory as the Bridge.SimplePlugin.dll file, with an extension of "*.log*"
+The plugin bridge writes a log file and logs every step of the assembly loading process. It is located in the user's AppData directory, under %AppData%\SharpSoundDevice\Logs
+
+For example, if the user is called "Guest1", the directory would be (on Windows 7 and above):
+
+	C:\Users\Guest1\AppData\Roaming\SharpSoundDevice\Logs
 
 **Example log output:**
 
@@ -378,6 +390,8 @@ Make sure you don't end up with a circular loop between the editor and the plugi
 The following is a simple sine-wave synthesizer that responds to MIDI note-on and note-off messages. It's monophonic and has one paramater that controls the semitone offset.
 
 ### Demo 2
+
+*The following code is slightly out of date, it does not contain a required method that was added in version 1.4.1*
 
     using System;
     using System.Collections.Generic;
