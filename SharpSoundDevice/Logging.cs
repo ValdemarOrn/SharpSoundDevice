@@ -20,12 +20,15 @@ namespace SharpSoundDevice
 	/// </summary>
 	public static class Logging
 	{
-		private static string logfile;
-		private static FileStream logfileStream;
-		private static ConcurrentQueue<string> logQueue;
+		private static readonly string logfile;
+		private static readonly FileStream logfileStream;
+		private static readonly ConcurrentQueue<string> logQueue;
+
+		public static ConcurrentBag<Action<string>> LogHandlers;
 
 		static Logging()
 		{
+			LogHandlers = new ConcurrentBag<Action<string>>();
 			logQueue = new ConcurrentQueue<string>();
 			var dir = Path.Combine(Environment.ExpandEnvironmentVariables("%AppData%"), "SharpSoundDevice", "Logs");
 			Directory.CreateDirectory(dir);
@@ -119,8 +122,11 @@ namespace SharpSoundDevice
 		public static void Log(string message)
 		{
 			var ts = "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] ";
-			Console.WriteLine(ts + message);
-			logQueue.Enqueue(ts + message);
+			var msg = ts + message;
+			Console.WriteLine(msg);
+			logQueue.Enqueue(msg);
+			foreach (var handler in LogHandlers)
+				handler(msg);
 		}
 
 		/// <summary>
@@ -141,7 +147,7 @@ namespace SharpSoundDevice
 		public static void LogDeviceException(int id, Exception e)
 		{
 			var msg = e.GetTrace();
-			Log("DeviceId " + id + ": " + msg);
+			Log($"Exception raised by DeviceId {id}:" + msg);
 		}
 
 		/// <summary>

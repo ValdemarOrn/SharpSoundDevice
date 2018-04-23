@@ -30,3 +30,4 @@ $tf*/
 vstsdk/*
 *.sdf
 *.opensdf
+.vs*/

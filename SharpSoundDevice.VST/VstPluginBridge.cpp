@@ -29,8 +29,16 @@ VstPluginBridge::VstPluginBridge (audioMasterCallback audioMaster) : AudioEffect
 		outputBuffers[i] = new double[32768];
 	}
 
-	Device = new AudioDevice();
-	Device->InitializeDevice();
+	try
+	{
+		System::Reflection::Assembly^ ass = System::Reflection::Assembly::LoadFrom("C:\\Src\\_Tree\\Audio\\CloudSeed\\CloudSeed\\bin\\Debug\\SharpSoundDevice.dll");
+		Device = new AudioDevice();
+		Device->InitializeDevice();
+	}
+	catch (System::Exception^ ex)
+	{
+		System::Console::WriteLine(ex->Message);
+	}
 
 	Device->SetVstHost(this);
 

@@ -37,8 +37,18 @@ int CreateDevice()
 	SharpSoundDevice::Logging::Log("===============================================================================================");
 	SharpSoundDevice::Logging::Log("");
 	SharpSoundDevice::Logging::Log("Creating new device, SharpSoundDevice.VST (Bridge) Version: " + System::Reflection::Assembly::GetExecutingAssembly()->FullName);
-	int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
-	return deviceID;
+
+	try
+	{
+		int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
+		return deviceID;
+	}
+	catch (System::Exception^ ex)
+	{
+		SharpSoundDevice::Logging::Log("Failed to instantiate new device");
+		SharpSoundDevice::Logging::LogDeviceException(-1, ex);
+		throw;
+	}
 }
 
 // ------------------------ Constructor / Destructor ------------------------
@@ -56,21 +66,36 @@ AudioDevice::AudioDevice()
 	}
 	catch (System::Exception^ ex)
 	{
-		Console::WriteLine(ex->Message);
-		Console::WriteLine(ex->StackTrace);
+		SharpSoundDevice::Logging::LogDeviceException(AudioDeviceID, ex);
 		return;
 	}
 
-	this->InputChannelCount = -1;
-	this->OutputChannelCount = -1;
+	try
+	{
+		this->InputChannelCount = -1;
+		this->OutputChannelCount = -1;
 
-	PortInfo* portInfo = GetPortInfo(); // refresh input and output port count
-	delete portInfo;
+		PortInfo* portInfo = GetPortInfo(); // refresh input and output port count
+		delete portInfo;
+	}
+	catch (System::Exception^ ex)
+	{
+		SharpSoundDevice::Logging::LogDeviceException(AudioDeviceID, ex);
+	}
 }
 
 AudioDevice::~AudioDevice()
 {
-	SharpSoundDevice::Interop::DeleteDevice(this->AudioDeviceID);
+	try
+	{
+		throw gcnew Exception("Blargh!");
+		SharpSoundDevice::Interop::UnloadAudioBuffers(this->AudioDeviceID);
+		SharpSoundDevice::Interop::DeleteDevice(this->AudioDeviceID);
+	}
+	catch (Exception^ e)
+	{
+		SharpSoundDevice::Logging::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 
@@ -304,7 +329,7 @@ void AudioDevice::ProcessSample(double** input, double** output, unsigned int bu
 		}
 		else
 		{
-			array<array<double>^>^ inp = SharpSoundDevice::DeviceUtilities::GetManagedSamples((IntPtr)input, InputChannelCount, bufferSize);
+			array<array<double>^>^ inp = SharpSoundDevice::DeviceUtilities::GetManagedSamplesForDevice(this->AudioDeviceID, (IntPtr)input, InputChannelCount, bufferSize);
 			array<array<double>^>^ outp = SharpSoundDevice::DeviceUtilities::GetEmptyArrays(OutputChannelCount, bufferSize);
 			dev->ProcessSample(inp, outp, bufferSize);
 			SharpSoundDevice::DeviceUtilities::CopyToUnmanaged(outp, (IntPtr)output, OutputChannelCount, bufferSize);
