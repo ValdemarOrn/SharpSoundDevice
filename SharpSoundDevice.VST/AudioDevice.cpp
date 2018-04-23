@@ -31,7 +31,7 @@ int CreateDevice()
 {
 	char dllName[256];
 	HINSTANCE thismodule = GetMyModuleHandle();
-	GetModuleFileName(thismodule,dllName,256);
+	GetModuleFileName(thismodule, dllName, 256);
 
 	SharpSoundDevice::Logging::Log("");
 	SharpSoundDevice::Logging::Log("===============================================================================================");
@@ -61,16 +61,24 @@ AudioDevice::AudioDevice()
 		return;
 	}
 
+	// Note: For some weird reason, if I try to wrap these 4 lines in a try-catch, it causes problems loading the assmembly. No explanation found!
 	this->InputChannelCount = -1;
 	this->OutputChannelCount = -1;
-
 	PortInfo* portInfo = GetPortInfo(); // refresh input and output port count
 	delete portInfo;
 }
 
 AudioDevice::~AudioDevice()
 {
-	SharpSoundDevice::Interop::DeleteDevice(this->AudioDeviceID);
+	try
+	{
+		SharpSoundDevice::Interop::UnloadAudioBuffers(this->AudioDeviceID);
+		SharpSoundDevice::Interop::DeleteDevice(this->AudioDeviceID);
+	}
+	catch (Exception^ e)
+	{
+		SharpSoundDevice::Logging::LogDeviceException(AudioDeviceID, e);
+	}
 }
 
 
@@ -304,7 +312,7 @@ void AudioDevice::ProcessSample(double** input, double** output, unsigned int bu
 		}
 		else
 		{
-			array<array<double>^>^ inp = SharpSoundDevice::DeviceUtilities::GetManagedSamples((IntPtr)input, InputChannelCount, bufferSize);
+			array<array<double>^>^ inp = SharpSoundDevice::DeviceUtilities::GetManagedSamplesForDevice(this->AudioDeviceID, (IntPtr)input, InputChannelCount, bufferSize);
 			array<array<double>^>^ outp = SharpSoundDevice::DeviceUtilities::GetEmptyArrays(OutputChannelCount, bufferSize);
 			dev->ProcessSample(inp, outp, bufferSize);
 			SharpSoundDevice::DeviceUtilities::CopyToUnmanaged(outp, (IntPtr)output, OutputChannelCount, bufferSize);

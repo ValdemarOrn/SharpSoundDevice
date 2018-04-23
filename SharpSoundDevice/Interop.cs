@@ -15,11 +15,10 @@ namespace SharpSoundDevice
 	public class Interop
 	{
 		private static object LockObject = new object();
-
 		private static int CurrentID = 1;
-
+		private static List<double[][]> AudioBuffers = new List<double[][]> { null };
 		private static List<IAudioDevice> Devices = new List<IAudioDevice> { null };
-		
+
 		/// <summary>
 		/// Load the plugin assembly and instantiates a new instance of the plugin class
 		/// </summary>
@@ -36,7 +35,7 @@ namespace SharpSoundDevice
 				return -1;
 			}
 
-			lock(LockObject)
+			lock (LockObject)
 			{
 				int id = CurrentID;
 				CurrentID++;
@@ -54,8 +53,9 @@ namespace SharpSoundDevice
 					return -1;
 
 				Devices.Add(instance); // extend list by one
+				AudioBuffers.Add(null);
 				instance.DeviceId = GetID(instance);
-                Logging.Log("Object successfully loaded, DeviceId: " + GetID(instance));
+				Logging.Log("Object successfully loaded, DeviceId: " + GetID(instance));
 				return id;
 			}
 		}
@@ -99,6 +99,33 @@ namespace SharpSoundDevice
 
 			Devices[id] = null;
 			return true;
+		}
+
+		/// <summary>
+		/// removes any reserved buffers for the specified device. Used at plugin unload time
+		/// </summary>
+		/// <param name="deviceId"></param>
+		public static void UnloadAudioBuffers(int deviceId)
+		{
+			AudioBuffers[deviceId] = null;
+		}
+
+		public static double[][] GetAudioBuffers(int deviceId, int channelCount, int bufferSize)
+		{
+			var existingBuffer = AudioBuffers[deviceId];
+			if (existingBuffer == null || existingBuffer.Length != channelCount || existingBuffer[0].Length != bufferSize)
+			{
+				var newBuf = new double[channelCount][];
+				for (int i = 0; i < channelCount; i++)
+				{
+					newBuf[i] = new double[bufferSize];
+				}
+
+				AudioBuffers[deviceId] = newBuf;
+				existingBuffer = newBuf;
+			}
+
+			return existingBuffer;
 		}
 	}
 }

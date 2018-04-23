@@ -104,7 +104,6 @@
     <Compile Include="IHostInfo.cs" />
     <Compile Include="IAudioDevice.cs" />
     <Compile Include="Interop.cs" />
-    <Compile Include="Logging2.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="PluginLoader.cs" />

@@ -66,20 +66,46 @@ namespace SharpSoundDevice
 		}
 
 		/// <summary>
-		/// Copies data from double** into managed 2d array
+		/// Copies data from double** into the audioDevice's supplied buffer
 		/// </summary>
+		/// <param name="audioDeviceId"></param>
 		/// <param name="ptr"></param>
-		/// <param name="InputPortCount"></param>
+		/// <param name="inputPortCount"></param>
 		/// <param name="bufferSize"></param>
 		/// <returns></returns>
-		public static double[][] GetManagedSamples(IntPtr ptr, int InputPortCount, uint bufferSize)
+		public static double[][] GetManagedSamplesForDevice(int audioDeviceId, IntPtr ptr, int inputPortCount, uint bufferSize)
+		{
+			var output = Interop.GetAudioBuffers(audioDeviceId, inputPortCount, (int)bufferSize);
+
+			unsafe
+			{
+				double** input = (double**)ptr;
+
+				for (int i = 0; i < inputPortCount; i++)
+				{
+					double[] ch = output[i];
+					Marshal.Copy((IntPtr)input[i], ch, 0, (int)bufferSize);
+				}
+
+				return output;
+			}
+		}
+
+		/// <summary>
+		/// Copies data from double** into a NEW managed 2d array
+		/// </summary>
+		/// <param name="ptr"></param>
+		/// <param name="inputPortCount"></param>
+		/// <param name="bufferSize"></param>
+		/// <returns></returns>
+		public static double[][] GetManagedSamples(IntPtr ptr, int inputPortCount, uint bufferSize)
 		{
 			unsafe
 			{
 				double** input = (double**)ptr;
 
-				var output = new double[InputPortCount][];
-				for (int i = 0; i < InputPortCount; i++)
+				var output = new double[inputPortCount][];
+				for (int i = 0; i < inputPortCount; i++)
 				{
 					double[] ch = new double[bufferSize];
 					output[i] = ch;
