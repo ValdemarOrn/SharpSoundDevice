@@ -24,7 +24,7 @@
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>SharpSoundDevice</RootNamespace>
     <ProjectName>SharpSoundDevice.VST</ProjectName>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -39,7 +39,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -167,7 +167,6 @@
     <ClInclude Include="AssemblyInitializer.h" />
     <ClInclude Include="AudioDevice.h" />
     <ClInclude Include="HostInfoClass.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="VstPluginBridge.h" />
     <ClInclude Include="VstPluginBridgeEditor.h" />
   </ItemGroup>
@@ -186,9 +185,6 @@
     <ProjectReference Include="..\SharpSoundDevice\SharpSoundDevice.csproj">
       <Project>{d07e798c-76e3-49fb-b97c-ca4f8dd55624}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="SharpSoundDevice.VST.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
