@@ -36,6 +36,9 @@ VstPluginBridge::VstPluginBridge (audioMasterCallback audioMaster) : AudioEffect
 	}
 	catch (System::Exception^ e)
 	{
+		// Note: This should write to the same path, in the same format, as the Log output in Logging.cs in SharpSoundDevice.dll
+		// We can't rely on it here though, because this is the assembly resolver :)
+
 		System::String^ dir = System::IO::Path::Combine(System::Environment::ExpandEnvironmentVariables("%AppData%"), "SharpSoundDevice", "Logs");
 		System::IO::Directory::CreateDirectory(dir);
 		System::String^ filename = System::String::Format("SharpSoundDevice-InitFailure-{0:yyyy-MM-dd-HHmmss}.log", System::DateTime::Now);
