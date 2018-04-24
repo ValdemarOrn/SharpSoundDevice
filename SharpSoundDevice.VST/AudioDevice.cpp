@@ -31,24 +31,14 @@ int CreateDevice()
 {
 	char dllName[256];
 	HINSTANCE thismodule = GetMyModuleHandle();
-	GetModuleFileName(thismodule,dllName,256);
+	GetModuleFileName(thismodule, dllName, 256);
 
 	SharpSoundDevice::Logging::Log("");
 	SharpSoundDevice::Logging::Log("===============================================================================================");
 	SharpSoundDevice::Logging::Log("");
 	SharpSoundDevice::Logging::Log("Creating new device, SharpSoundDevice.VST (Bridge) Version: " + System::Reflection::Assembly::GetExecutingAssembly()->FullName);
-
-	try
-	{
-		int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
-		return deviceID;
-	}
-	catch (System::Exception^ ex)
-	{
-		SharpSoundDevice::Logging::Log("Failed to instantiate new device");
-		SharpSoundDevice::Logging::LogDeviceException(-1, ex);
-		throw;
-	}
+	int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
+	return deviceID;
 }
 
 // ------------------------ Constructor / Destructor ------------------------
@@ -64,31 +54,23 @@ AudioDevice::AudioDevice()
 		AssemblyLoader::AddAssemblyResolver(assemblyNameStr);
 		this->AudioDeviceID = CreateDevice();
 	}
-	catch (System::Exception^ ex)
+	catch (System::Exception^ e)
 	{
-		SharpSoundDevice::Logging::LogDeviceException(AudioDeviceID, ex);
+		SharpSoundDevice::Logging::LogDeviceException(AudioDeviceID, e);
 		return;
 	}
 
-	try
-	{
-		this->InputChannelCount = -1;
-		this->OutputChannelCount = -1;
-
-		PortInfo* portInfo = GetPortInfo(); // refresh input and output port count
-		delete portInfo;
-	}
-	catch (System::Exception^ ex)
-	{
-		SharpSoundDevice::Logging::LogDeviceException(AudioDeviceID, ex);
-	}
+	// Note: For some weird reason, if I try to wrap these 4 lines in a try-catch, it causes problems loading the assmembly. No explanation found!
+	this->InputChannelCount = -1;
+	this->OutputChannelCount = -1;
+	PortInfo* portInfo = GetPortInfo(); // refresh input and output port count
+	delete portInfo;
 }
 
 AudioDevice::~AudioDevice()
 {
 	try
 	{
-		throw gcnew Exception("Blargh!");
 		SharpSoundDevice::Interop::UnloadAudioBuffers(this->AudioDeviceID);
 		SharpSoundDevice::Interop::DeleteDevice(this->AudioDeviceID);
 	}

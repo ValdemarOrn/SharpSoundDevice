@@ -23,6 +23,7 @@ namespace SharpSoundDevice
 		private static readonly string logfile;
 		private static readonly FileStream logfileStream;
 		private static readonly ConcurrentQueue<string> logQueue;
+		private static readonly object flushLock = new object();
 
 		public static ConcurrentBag<Action<string>> LogHandlers;
 
@@ -35,7 +36,7 @@ namespace SharpSoundDevice
 			var filename = string.Format("SharpSoundDevice-{0:yyyy-MM-dd-HHmmss}.log", DateTime.Now);
 			logfile = Path.Combine(dir, filename);
 
-			Log(string.Format("Initializing SharpSoundDevice system.\nProcess: {0}\nExecutable: {1}", 
+			Log(string.Format("Initializing SharpSoundDevice system.\nProcess: {0}\nExecutable: {1}",
 				Process.GetCurrentProcess().ProcessName,
 				Process.GetCurrentProcess().MainModule.FileName));
 
@@ -84,7 +85,7 @@ namespace SharpSoundDevice
 		{
 			while (true)
 			{
-				Thread.Sleep(1000);
+				Thread.Sleep(500);
 
 				if (logQueue.Count == 0)
 					continue;
@@ -96,26 +97,28 @@ namespace SharpSoundDevice
 		private static void FlushInternal()
 		{
 			var sb = new StringBuilder();
-
-			while (true)
+			lock (flushLock)
 			{
-				string line;
-				var ok = logQueue.TryDequeue(out line);
-				if (!ok)
-					break;
+				while (true)
+				{
+					string line;
+					var ok = logQueue.TryDequeue(out line);
+					if (!ok)
+						break;
 
-				sb.AppendLine(line);
-			}
+					sb.AppendLine(line);
+				}
 
-			try
-			{
-				var data = Encoding.UTF8.GetBytes(sb.ToString());
-				logfileStream.Write(data, 0, data.Length);
-				logfileStream.Flush();
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine("Failed to append logfile:\n{0}", ex.GetTrace());
+				try
+				{
+					var data = Encoding.UTF8.GetBytes(sb.ToString());
+					logfileStream.Write(data, 0, data.Length);
+					logfileStream.Flush();
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("Failed to append logfile:\n{0}", ex.GetTrace());
+				}
 			}
 		}
 
@@ -148,6 +151,7 @@ namespace SharpSoundDevice
 		{
 			var msg = e.GetTrace();
 			Log($"Exception raised by DeviceId {id}:" + msg);
+			FlushInternal();
 		}
 
 		/// <summary>

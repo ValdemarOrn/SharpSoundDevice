@@ -31,13 +31,12 @@ VstPluginBridge::VstPluginBridge (audioMasterCallback audioMaster) : AudioEffect
 
 	try
 	{
-		System::Reflection::Assembly^ ass = System::Reflection::Assembly::LoadFrom("C:\\Src\\_Tree\\Audio\\CloudSeed\\CloudSeed\\bin\\Debug\\SharpSoundDevice.dll");
 		Device = new AudioDevice();
 		Device->InitializeDevice();
 	}
-	catch (System::Exception^ ex)
+	catch (System::Exception^ e)
 	{
-		System::Console::WriteLine(ex->Message);
+		SharpSoundDevice::Logging::LogDeviceException(-1, e);
 	}
 
 	Device->SetVstHost(this);
