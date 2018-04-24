@@ -173,7 +173,6 @@
   <ItemGroup>
     <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffect.cpp" />
     <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffectx.cpp" />
-    <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\vstplugmain.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="AssemblyInitializer.cpp" />
     <ClCompile Include="AudioDevice.cpp" />

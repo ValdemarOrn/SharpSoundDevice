@@ -17,6 +17,28 @@ AudioEffect* createEffectInstance (audioMasterCallback audioMaster)
 }
 
 //-----------------------------------------------------------------------------------------
+// This is the main exported function, that gets picked up by the host
+// We don't include the vstplugmain.cpp from he SDK - we don't need the multi-platform compatibility right now.
+// Also, some weird things happen when you load DllMain - it seems to mess with the CLR integration, as DllMain has some special meaning in Windows
+// After upgrading to the VST SDK from 3.6.9 the plugins stopped loading, and I got exceptions about issues with the CLR. This only happened when it tried to
+// invoke DllMain. I'm not sure what was happening, but dllMain isn't needed, and I opted to include this custom entrypoint, that is simply a stripped down 
+// version of the one in vstpluginmain.cpp
+//-----------------------------------------------------------------------------------------
+extern "C" {
+	__declspec(dllexport) AEffect* VSTPluginMain(audioMasterCallback audioMaster)
+	{
+		if (!audioMaster(0, audioMasterVersion, 0, 0, 0, 0))
+			return 0;
+
+		AudioEffect* effect = createEffectInstance(audioMaster);
+		if (!effect)
+			return 0;
+
+		return effect->getAeffect();
+	}
+}
+
+//-----------------------------------------------------------------------------------------
 // VstPluginBridge
 //-----------------------------------------------------------------------------------------
 VstPluginBridge::VstPluginBridge (audioMasterCallback audioMaster) : AudioEffectX (audioMaster, 1, 1)
