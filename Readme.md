@@ -40,8 +40,8 @@ Stable versions are provided as compiled 32 and 64 bit Windows binaries.
 The binaries are build against MSVC 1.4.1 (Microsoft Visual C Runtime). You can download the Redistributable directly from Microsoft:
 
 * [Microsoft Web Page (scroll to bottom of page)](https://www.visualstudio.com/downloads/)
-* [x86 Direct Link](https://aka.ms/vs/15/release/VC_redist.x64.exe)
-* [x64 Direct Link](https://aka.ms/vs/15/release/VC_redist.x86.exe)
+* [x64 Direct Link](https://aka.ms/vs/15/release/VC_redist.x64.exe)
+* [x86 Direct Link](https://aka.ms/vs/15/release/VC_redist.x86.exe)
 
 # License
 
