@@ -13,22 +13,22 @@
     <ClInclude Include="AudioDevice.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\vstsdk\vstsdk2.4\pluginterfaces\vst2.x\aeffect.h">
+    <ClInclude Include="..\VST2_SDK\pluginterfaces\vst2.x\aeffect.h">
       <Filter>VST</Filter>
     </ClInclude>
-    <ClInclude Include="..\vstsdk\vstsdk2.4\pluginterfaces\vst2.x\aeffectx.h">
+    <ClInclude Include="..\VST2_SDK\pluginterfaces\vst2.x\aeffectx.h">
       <Filter>VST</Filter>
     </ClInclude>
-    <ClInclude Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\aeffeditor.h">
+    <ClInclude Include="..\VST2_SDK\public.sdk\source\vst2.x\aeffeditor.h">
       <Filter>VST</Filter>
     </ClInclude>
-    <ClInclude Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.h">
+    <ClInclude Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffect.h">
       <Filter>VST</Filter>
     </ClInclude>
-    <ClInclude Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.h">
+    <ClInclude Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffectx.h">
       <Filter>VST</Filter>
     </ClInclude>
-    <ClInclude Include="..\vstsdk\vstsdk2.4\pluginterfaces\vst2.x\vstfxstore.h">
+    <ClInclude Include="..\VST2_SDK\pluginterfaces\vst2.x\vstfxstore.h">
       <Filter>VST</Filter>
     </ClInclude>
     <ClInclude Include="VstPluginBridge.h">
@@ -48,13 +48,13 @@
     <ClCompile Include="AudioDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp">
+    <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffect.cpp">
       <Filter>VST</Filter>
     </ClCompile>
-    <ClCompile Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.cpp">
+    <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffectx.cpp">
       <Filter>VST</Filter>
     </ClCompile>
-    <ClCompile Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\vstplugmain.cpp">
+    <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\vstplugmain.cpp">
       <Filter>VST</Filter>
     </ClCompile>
     <ClCompile Include="VstPluginBridge.cpp">

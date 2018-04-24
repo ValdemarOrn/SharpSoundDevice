@@ -94,7 +94,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x;..\vstsdk\vstsdk2.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\VST2_SDK\public.sdk\source\vst2.x;..\VST2_SDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x;..\vstsdk\vstsdk2.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\VST2_SDK\public.sdk\source\vst2.x;..\VST2_SDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -129,7 +129,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x;..\vstsdk\vstsdk2.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\VST2_SDK\public.sdk\source\vst2.x;..\VST2_SDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -145,7 +145,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x;..\vstsdk\vstsdk2.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\VST2_SDK\public.sdk\source\vst2.x;..\VST2_SDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -158,12 +158,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\vstsdk\vstsdk2.4\pluginterfaces\vst2.x\aeffect.h" />
-    <ClInclude Include="..\vstsdk\vstsdk2.4\pluginterfaces\vst2.x\aeffectx.h" />
-    <ClInclude Include="..\vstsdk\vstsdk2.4\pluginterfaces\vst2.x\vstfxstore.h" />
-    <ClInclude Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\aeffeditor.h" />
-    <ClInclude Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.h" />
-    <ClInclude Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.h" />
+    <ClInclude Include="..\VST2_SDK\pluginterfaces\vst2.x\aeffect.h" />
+    <ClInclude Include="..\VST2_SDK\pluginterfaces\vst2.x\aeffectx.h" />
+    <ClInclude Include="..\VST2_SDK\pluginterfaces\vst2.x\vstfxstore.h" />
+    <ClInclude Include="..\VST2_SDK\public.sdk\source\vst2.x\aeffeditor.h" />
+    <ClInclude Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffect.h" />
+    <ClInclude Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffectx.h" />
     <ClInclude Include="AssemblyInitializer.h" />
     <ClInclude Include="AudioDevice.h" />
     <ClInclude Include="HostInfoClass.h" />
@@ -171,9 +171,9 @@
     <ClInclude Include="VstPluginBridgeEditor.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp" />
-    <ClCompile Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.cpp" />
-    <ClCompile Include="..\vstsdk\vstsdk2.4\public.sdk\source\vst2.x\vstplugmain.cpp" />
+    <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffect.cpp" />
+    <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\audioeffectx.cpp" />
+    <ClCompile Include="..\VST2_SDK\public.sdk\source\vst2.x\vstplugmain.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="AssemblyInitializer.cpp" />
     <ClCompile Include="AudioDevice.cpp" />

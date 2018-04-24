@@ -70,22 +70,29 @@ Documentation is still limited, but (almost) all public entities in the SharpSou
 
 You don't need to build the library from source in order to develop plugins. You can download the latest stable version [from here](../../tree/master/Builds)
 
-If you want to compile your own version you will need VST 2.4 SDK to compile from source. The SDK is *not* open source and must be downloaded [directly from Steinberg](http://www.steinberg.net/en/company/developer.html). However, compiled version of the libraries can be freely distributed in compliance with the license.
+If you want to compile your own version you will need VST 2.4 SDK to compile from source. The SDK is *not* open source and must be downloaded [directly from Steinberg](https://www.steinberg.net/en/company/developers.html). However, compiled version of the libraries can be freely distributed in compliance with the license. Download the VST3 Plug-in SDK from Steinberg, this also includes the legacy (but still widely used) 2.4 framework.
 
-Place the **vstsdk** directory in the root of the repository, so you have a tree like this:
+Place the **VST2_SDK** directory in the root of the repository, so you have a tree like this:
 
 	- .gitignore
 	- Build.bat
 	- Readme.md
 	- license.txt
  	- ...more files...
-	- vstsdk/
-	        - vstsdk2.4/
-	                   - artwork/
-	                   - bin/
-	                   - doc/
-	                   - plugininterfaces/
-	                   - public.sdk/
-	                   - vstgui.sf/
-	                   - index.html
+	- VST2_SDK/
+		- pluginterfaces/
+			- vst2.x/
+				- aeffect.h
+				- aeffectx.h
+				- vstfxstore.h
+		- public.sdk/
+			- source/
+				- vst2.x/
+					- aeffeditor.h
+					- audioeffect.cpp
+					- audioeffect.h
+					- audioeffectx.cpp
+					- audioeffectx.h
+					- vstplugmain.cpp
+
 
