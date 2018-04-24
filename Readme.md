@@ -33,9 +33,15 @@ The quickstart contains 2 demo plugins and covers the development process.
 
 # Download
 
-Stable versions are provided as compiled 32 bit Windows binaries. (64 bit support it planned)
+Stable versions are provided as compiled 32 and 64 bit Windows binaries.
 
 [Get the latest version from the Github repository.](../../tree/master/Builds)
+
+The binaries are build against MSVC 1.4.1 (Microsoft Visual C Runtime). You can download the Redistributable directly from Microsoft:
+
+* [Microsoft Web Page (scroll to bottom of page)](https://www.visualstudio.com/downloads/)
+* [x86 Direct Link](https://aka.ms/vs/15/release/VC_redist.x64.exe)
+* [x64 Direct Link](https://aka.ms/vs/15/release/VC_redist.x86.exe)
 
 # License
 
@@ -57,10 +63,8 @@ Documentation is still limited, but (almost) all public entities in the SharpSou
 ## Current Limitations
 
 * **Currently the plugin bridge only supports one IAudioDevice per assembly!** That means, if you create more than one class inside your .NET assembly that implements this interface, it might not be able to load it. This is a limitation that may (or may not :) be changed in the future. Until then, **strictly one device per assembly, please!**
-* 32-Bit only (for now). 64 bit support is scheduled. In theory, it should work just fine, I just haven't had the time to verify that it does. But you need to compile your own binaries (no 64 bit compiled binaries are currently available).
-	* Note that only the plugin bridge needs to be compiled specially. .NET assemblies, as long as they're compiled by Target: AnyCPU, will work with both 32 and 64 bit hosts.
 * Windows only. Linux support is a possibility by using Mono, but requires writing a new bridge adapter.
-* Bad things will happen if you attempt to load multiple plugins that use different versions of the SharpSoundDevice Library.
+* Bad things will happen if you attempt to load multiple plugins that use different versions of the SharpSoundDevice Library. Don't.
 
 ## To Build
 
