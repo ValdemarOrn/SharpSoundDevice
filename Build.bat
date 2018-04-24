@@ -1,10 +1,11 @@
+rem This has issues about some bogus? inconsistent method declarations in tuplicated types
 rd /S /Q bin
 msbuild SharpSoundDevice.sln /p:Configuration=Debug,Platform=x86
 msbuild SharpSoundDevice.sln /p:Configuration=Release,Platform=x86
 msbuild SharpSoundDevice.sln /p:Configuration=Debug,Platform=x64
 msbuild SharpSoundDevice.sln /p:Configuration=Release,Platform=x64
 
-set ts=%DATE:~11%-%DATE:~8,2%-%DATE:~5,2%
+set ts=%DATE:~6,4%-%DATE:~3,2%-%DATE:~0,2%
 
 rd Builds\Current /s /q
 mkdir Builds\Current

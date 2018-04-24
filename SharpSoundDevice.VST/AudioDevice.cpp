@@ -46,6 +46,7 @@ int CreateDevice()
 	{
 		SharpSoundDevice::Logging::Log("Failed to call CreateDevice");
 		SharpSoundDevice::Logging::LogDeviceException(-1, e);
+		throw;
 	}
 }
 
@@ -56,7 +57,7 @@ AudioDevice::AudioDevice()
 	// Note: DO NOT ADD CALLS TO SharpSoundDevice.dll IN HERE!!! THIS IS THE RESOLVER!!!
 
 #ifdef _DEBUG
-	AllocConsole();
+	//AllocConsole();
 #endif
 	System::String^ assemblyNameStr = (gcnew String(assemblyName))->Trim();
 	AssemblyLoader::AddAssemblyResolver(assemblyNameStr);
