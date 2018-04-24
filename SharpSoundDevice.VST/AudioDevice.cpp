@@ -29,38 +29,39 @@ HINSTANCE GetMyModuleHandle()
 
 int CreateDevice()
 {
-	char dllName[256];
-	HINSTANCE thismodule = GetMyModuleHandle();
-	GetModuleFileName(thismodule, dllName, 256);
+	try
+	{
+		char dllName[256];
+		HINSTANCE thismodule = GetMyModuleHandle();
+		GetModuleFileName(thismodule, dllName, 256);
 
-	SharpSoundDevice::Logging::Log("");
-	SharpSoundDevice::Logging::Log("===============================================================================================");
-	SharpSoundDevice::Logging::Log("");
-	SharpSoundDevice::Logging::Log("Creating new device, SharpSoundDevice.VST (Bridge) Version: " + System::Reflection::Assembly::GetExecutingAssembly()->FullName);
-	int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
-	return deviceID;
+		SharpSoundDevice::Logging::Log("");
+		SharpSoundDevice::Logging::Log("===============================================================================================");
+		SharpSoundDevice::Logging::Log("");
+		SharpSoundDevice::Logging::Log("Creating new device, SharpSoundDevice.VST (Bridge) Version: " + System::Reflection::Assembly::GetExecutingAssembly()->FullName);
+		int deviceID = SharpSoundDevice::Interop::CreateDevice(gcnew String(dllName), gcnew String(assemblyName));
+		return deviceID;
+	}
+	catch (Exception^ e)
+	{
+		SharpSoundDevice::Logging::Log("Failed to call CreateDevice");
+		SharpSoundDevice::Logging::LogDeviceException(-1, e);
+	}
 }
 
 // ------------------------ Constructor / Destructor ------------------------
 
 AudioDevice::AudioDevice()
 {
-	try
-	{
-#ifdef _DEBUG
-		AllocConsole();
-#endif
-		System::String^ assemblyNameStr = (gcnew String(assemblyName))->Trim();
-		AssemblyLoader::AddAssemblyResolver(assemblyNameStr);
-		this->AudioDeviceID = CreateDevice();
-	}
-	catch (System::Exception^ e)
-	{
-		SharpSoundDevice::Logging::LogDeviceException(AudioDeviceID, e);
-		return;
-	}
+	// Note: DO NOT ADD CALLS TO SharpSoundDevice.dll IN HERE!!! THIS IS THE RESOLVER!!!
 
-	// Note: For some weird reason, if I try to wrap these 4 lines in a try-catch, it causes problems loading the assmembly. No explanation found!
+#ifdef _DEBUG
+	AllocConsole();
+#endif
+	System::String^ assemblyNameStr = (gcnew String(assemblyName))->Trim();
+	AssemblyLoader::AddAssemblyResolver(assemblyNameStr);
+	this->AudioDeviceID = CreateDevice();
+
 	this->InputChannelCount = -1;
 	this->OutputChannelCount = -1;
 	PortInfo* portInfo = GetPortInfo(); // refresh input and output port count

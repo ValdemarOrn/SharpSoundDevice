@@ -36,7 +36,10 @@ VstPluginBridge::VstPluginBridge (audioMasterCallback audioMaster) : AudioEffect
 	}
 	catch (System::Exception^ e)
 	{
-		SharpSoundDevice::Logging::LogDeviceException(-1, e);
+		System::String^ dir = System::IO::Path::Combine(System::Environment::ExpandEnvironmentVariables("%AppData%"), "SharpSoundDevice", "Logs");
+		System::IO::Directory::CreateDirectory(dir);
+		System::String^ filename = System::String::Format("SharpSoundDevice-InitFailure-{0:yyyy-MM-dd-HHmmss}.log", System::DateTime::Now);
+		System::IO::File::WriteAllText(System::IO::Path::Combine(dir, filename), e->Message + "\r\n" + e->StackTrace);
 	}
 
 	Device->SetVstHost(this);
