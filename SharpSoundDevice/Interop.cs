@@ -16,7 +16,8 @@ namespace SharpSoundDevice
 	{
 		private static object LockObject = new object();
 		private static int CurrentID = 1;
-		private static List<double[][]> AudioBuffers = new List<double[][]> { null };
+		private static List<double[][]> InputAudioBuffers = new List<double[][]> { null };
+		private static List<double[][]> OutputAudioBuffers = new List<double[][]> { null };
 		private static List<IAudioDevice> Devices = new List<IAudioDevice> { null };
 
 		/// <summary>
@@ -53,7 +54,8 @@ namespace SharpSoundDevice
 					return -1;
 
 				Devices.Add(instance); // extend list by one
-				AudioBuffers.Add(null);
+				InputAudioBuffers.Add(null);
+				OutputAudioBuffers.Add(null);
 				instance.DeviceId = GetID(instance);
 				Logging.Log("Object successfully loaded, DeviceId: " + GetID(instance));
 				return id;
@@ -107,13 +109,15 @@ namespace SharpSoundDevice
 		/// <param name="deviceId"></param>
 		public static void UnloadAudioBuffers(int deviceId)
 		{
-			AudioBuffers[deviceId] = null;
+			InputAudioBuffers[deviceId] = null;
+			OutputAudioBuffers[deviceId] = null;
 		}
 
-		public static double[][] GetAudioBuffers(int deviceId, int channelCount, int bufferSize)
+		public static double[][] GetAudioBuffers(int deviceId, InputOutput inputOutput, int channelCount, int bufferSize)
 		{
-			var existingBuffer = AudioBuffers[deviceId];
-			if (existingBuffer == null || existingBuffer.Length != channelCount || existingBuffer[0].Length != bufferSize)
+			var buffers = inputOutput == InputOutput.Input ? InputAudioBuffers : OutputAudioBuffers;
+			var existingBuffer = buffers[deviceId];
+			if (existingBuffer == null || existingBuffer.Length != channelCount || (channelCount > 0 && existingBuffer[0].Length != bufferSize))
 			{
 				var newBuf = new double[channelCount][];
 				for (int i = 0; i < channelCount; i++)
@@ -121,11 +125,17 @@ namespace SharpSoundDevice
 					newBuf[i] = new double[bufferSize];
 				}
 
-				AudioBuffers[deviceId] = newBuf;
+				buffers[deviceId] = newBuf;
 				existingBuffer = newBuf;
 			}
 
 			return existingBuffer;
 		}
+	}
+
+	public enum InputOutput
+	{
+		Input,
+		Output
 	}
 }

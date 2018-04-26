@@ -66,22 +66,22 @@ namespace SharpSoundDevice
 		}
 
 		/// <summary>
-		/// Copies data from double** into the audioDevice's supplied buffer
+		/// Copies data from double** into the audioDevice's supplied input buffer
 		/// </summary>
 		/// <param name="audioDeviceId"></param>
 		/// <param name="ptr"></param>
-		/// <param name="inputPortCount"></param>
+		/// <param name="channels"></param>
 		/// <param name="bufferSize"></param>
 		/// <returns></returns>
-		public static double[][] GetManagedSamplesForDevice(int audioDeviceId, IntPtr ptr, int inputPortCount, uint bufferSize)
+		public static double[][] CopyToManagedBuffer(int audioDeviceId, IntPtr ptr, int channels, uint bufferSize)
 		{
-			var output = Interop.GetAudioBuffers(audioDeviceId, inputPortCount, (int)bufferSize);
+			var output = Interop.GetAudioBuffers(audioDeviceId, InputOutput.Input, channels, (int)bufferSize);
 
 			unsafe
 			{
 				double** input = (double**)ptr;
 
-				for (int i = 0; i < inputPortCount; i++)
+				for (int i = 0; i < channels; i++)
 				{
 					double[] ch = output[i];
 					Marshal.Copy((IntPtr)input[i], ch, 0, (int)bufferSize);
@@ -92,20 +92,34 @@ namespace SharpSoundDevice
 		}
 
 		/// <summary>
+		/// Get the device's output buffers and zeros them
+		/// </summary>
+		/// <returns></returns>
+		public static double[][] GetOutputBuffer(int audioDeviceId, int channels, uint bufferSize)
+		{
+			var output = Interop.GetAudioBuffers(audioDeviceId, InputOutput.Output, channels, (int)bufferSize);
+
+			for (int i = 0; i < channels; i++)
+				Array.Clear(output[i], 0, output[i].Length);
+
+			return output;
+		}
+
+		/// <summary>
 		/// Copies data from double** into a NEW managed 2d array
 		/// </summary>
 		/// <param name="ptr"></param>
-		/// <param name="inputPortCount"></param>
+		/// <param name="channels"></param>
 		/// <param name="bufferSize"></param>
 		/// <returns></returns>
-		public static double[][] GetManagedSamples(IntPtr ptr, int inputPortCount, uint bufferSize)
+		public static double[][] GetManagedSamples(IntPtr ptr, int channels, uint bufferSize)
 		{
 			unsafe
 			{
 				double** input = (double**)ptr;
 
-				var output = new double[inputPortCount][];
-				for (int i = 0; i < inputPortCount; i++)
+				var output = new double[channels][];
+				for (int i = 0; i < channels; i++)
 				{
 					double[] ch = new double[bufferSize];
 					output[i] = ch;
@@ -120,14 +134,14 @@ namespace SharpSoundDevice
 		/// <summary>
 		/// Creates an empty 2d managed array
 		/// </summary>
-		/// <param name="InputPortCount"></param>
+		/// <param name="channels"></param>
 		/// <param name="bufferSize"></param>
 		/// <returns></returns>
-		public static double[][] GetEmptyArrays(int InputPortCount, uint bufferSize)
+		public static double[][] GetEmptyArrays(int channels, uint bufferSize)
 		{
-			var output = new double[InputPortCount][];
+			var output = new double[channels][];
 
-			for (int i = 0; i < InputPortCount; i++)
+			for (int i = 0; i < channels; i++)
 				output[i] = new double[bufferSize];
 
 			return output;

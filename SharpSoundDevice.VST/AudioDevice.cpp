@@ -313,8 +313,8 @@ void AudioDevice::ProcessSample(double** input, double** output, unsigned int bu
 		}
 		else
 		{
-			array<array<double>^>^ inp = SharpSoundDevice::DeviceUtilities::GetManagedSamplesForDevice(this->AudioDeviceID, (IntPtr)input, InputChannelCount, bufferSize);
-			array<array<double>^>^ outp = SharpSoundDevice::DeviceUtilities::GetEmptyArrays(OutputChannelCount, bufferSize);
+			array<array<double>^>^ inp = SharpSoundDevice::DeviceUtilities::CopyToManagedBuffer(this->AudioDeviceID, (IntPtr)input, InputChannelCount, bufferSize);
+			array<array<double>^>^ outp = SharpSoundDevice::DeviceUtilities::GetOutputBuffer(this->AudioDeviceID, OutputChannelCount, bufferSize);
 			dev->ProcessSample(inp, outp, bufferSize);
 			SharpSoundDevice::DeviceUtilities::CopyToUnmanaged(outp, (IntPtr)output, OutputChannelCount, bufferSize);
 		}
