@@ -1,1 +1,1 @@
-[assembly:System::Reflection::AssemblyVersionAttribute("1.5.1.*")];
+[assembly:System::Reflection::AssemblyVersionAttribute("1.5.2.*")];

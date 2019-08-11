@@ -59,7 +59,7 @@ namespace SharpSoundDevice
 					}
 					else
 					{
-						if (evData->Length < 3 || evData->Length > 4)
+						if (evData->Length < 1 || evData->Length > 4)
 							return;
 
 						VstMidiEvent  midiEv;
@@ -68,8 +68,17 @@ namespace SharpSoundDevice
 						midiEv.detune = 0;
 						midiEv.flags = kVstMidiEventIsRealtime;
 						midiEv.midiData[0] = evData[0];
-						midiEv.midiData[1] = evData[1];
-						midiEv.midiData[2] = evData[2];
+						
+						if (evData->Length >= 2)
+							midiEv.midiData[1] = evData[1];
+						else
+							midiEv.midiData[1] = 0;
+
+						if (evData->Length >= 3)
+							midiEv.midiData[2] = evData[2];
+						else
+							midiEv.midiData[2] = 0;
+
 						midiEv.midiData[3] = 0;
 						midiEv.noteLength = 0;
 						midiEv.noteOffset = 0;
